@@ -1,5 +1,6 @@
 #!/bin/sh
-# App Platform PRE_DEPLOY job'ı: her deploy'dan önce çalışır, hata verirse yeni sürüm yayına alınmaz.
+# Veritabanı hazırlığı: migrate + createcachetable. Render'da scripts/start.sh her başlangıçta
+# çağırır (ücretsiz planda pre-deploy komutu yok). Hata verirse (set -e) sunucu başlamaz.
 # createcachetable, migrate ile çalışmaz (throttle sayaçları için DatabaseCache tablosu); idempotenttir.
 set -e
 

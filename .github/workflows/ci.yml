@@ -100,12 +100,12 @@ jobs:
           echo "uid=$uid"
           test "$uid" != "0"
 
-      - name: PRE_DEPLOY betiği (migrate + createcachetable)
+      - name: Veritabanı hazırlık betiği (migrate + createcachetable)
         run: docker run --rm --network host $CONTAINER_ENV rapid-quiz-backend:ci sh scripts/predeploy.sh
 
-      - name: Duman testi - imaj PORT=8080 ile ayağa kalkar, health 200 döner
+      - name: Duman testi - Render başlangıç komutu (start.sh) PORT=8080 ile ayağa kalkar
         run: |
-          docker run -d --name api --network host $CONTAINER_ENV rapid-quiz-backend:ci
+          docker run -d --name api --network host $CONTAINER_ENV rapid-quiz-backend:ci sh scripts/start.sh
           status=000
           for i in $(seq 1 30); do
             status=$(curl -s -o health.json -w '%{http_code}' http://localhost:8080/api/v1/health/ || true)

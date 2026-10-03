@@ -1,0 +1,32 @@
+# Render Blueprint: ücretsiz web servisi (Docker). Neon PostgreSQL ayrı kurulur (README).
+services:
+  - type: web
+    name: rapid-quiz-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    # Ücretsiz planda preDeployCommand yok: migrate + createcachetable başlangıçta çalışır.
+    dockerCommand: sh scripts/start.sh
+    healthCheckPath: /api/v1/health/
+    autoDeployTrigger: commit
+    envVars:
+      # Neon doğrudan (pooler'sız) bağlantı adresi; sslmode=require içerir. Panelden girilir.
+      - key: DATABASE_URL
+        sync: false
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      # Frontend'in (DigitalOcean statik site) tam origin'i, örn. https://rapid-quiz-web-xxxxx.ondigitalocean.app
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com,localhost,127.0.0.1
+      # Django Admin girişi için (Render alan adı)
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://*.onrender.com
+      # Render'ın X-Forwarded-For zinciri: istemci IP'si + önündeki proxy. Dağıtımdan sonra
+      # README'deki "NUM_PROXIES doğrulaması" ile kontrol edilmelidir.
+      - key: NUM_PROXIES
+        value: "2"
+      - key: WEB_CONCURRENCY
+        value: "2"

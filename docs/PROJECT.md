@@ -12,7 +12,7 @@ Rapid Quiz; kullanıcının bir kategori seçip 20 soruyu, her biri için yalnı
 - Kategori başına 20 soru, her biri ayrı ekranda, soru başına 5 saniye
 - Quiz sonunda puan hesaplama, isim girişi ve top 10 skor tablosu
 - Django REST API (backend) ve Vue.js web istemcisi (frontend), ayrı repolarda
-- PostgreSQL veritabanı
+- PostgreSQL veritabanı; ücretsiz kurulum: Render (API) + Neon (veritabanı) + DigitalOcean (statik site)
 - Daha sonra eklenecek mobil uygulamaya hazır, istemciden bağımsız bir API
 
 **Kapsam dışı:**
@@ -45,7 +45,7 @@ Kategori başına havuzda 20'den fazla soru tutulursa her quiz'de rastgele 20 so
 En kritik nokta hile önlemedir: doğru cevaplar ve süre kontrolü istemciye bırakılmaz.
 
 - **Güvenlik / hile önleme:** Soru yanıtlarında doğru cevap istemciye gönderilmez. Puan ve süre sunucuda doğrulanır. Bir sonraki soru ancak mevcut soru cevaplandığında veya süresi dolduğunda döner.
-- **Rate limiting:** DRF throttling, IP başına: quiz başlatma 10/dk, isim kaydetme 10/dk, cevap gönderme 120/dk. Okul ve mobil operatör NAT'ı arkasındaki kullanıcılar aynı IP'yi paylaşabileceği için sınırlar gevşek tutulur. Sayaçlar tüm gunicorn worker'ları arasında paylaşılsın diye `DatabaseCache`'te tutulur (Redis yok); tablo `migrate` ile oluşmadığından `python manage.py createcachetable` ayrıca çalıştırılır. Yük dengeleyici arkasında gerçek istemci IP'si için `NUM_PROXIES` ayarı kullanılır (production varsayılanı 1).
+- **Rate limiting:** DRF throttling, IP başına: quiz başlatma 10/dk, isim kaydetme 10/dk, cevap gönderme 120/dk. Okul ve mobil operatör NAT'ı arkasındaki kullanıcılar aynı IP'yi paylaşabileceği için sınırlar gevşek tutulur. Sayaçlar tüm gunicorn worker'ları arasında paylaşılsın diye `DatabaseCache`'te tutulur (Redis yok); tablo `migrate` ile oluşmadığından `python manage.py createcachetable` ayrıca çalıştırılır. Yük dengeleyici arkasında gerçek istemci IP'si için `NUM_PROXIES` ayarı kullanılır (kod varsayılanı 1; Render'da `render.yaml` ile `2`, dağıtımdan sonra doğrulanır).
 - **Performans:** Soru uç noktası sunucuda 200 ms altında yanıt vermelidir; skor tablosu sorgusu indeksle desteklenir.
 - **Mobil uyumluluk:** API durumsuz (stateless) JSON REST'tir, cookie/session'a bağlı değildir; quiz oturumu UUID token ile taşınır.
 - **Duyarlı arayüz:** Web arayüzü 360 px genişliğe kadar mobil tarayıcıda kullanılabilir.
@@ -285,10 +285,11 @@ rapid-quiz-backend/
 ├── tests/                 # pytest (+ test_postgres.py: kısmi indeks, eş zamanlılık)
 ├── requirements/          # base.txt, dev.txt
 ├── .github/workflows/ci.yml
-├── scripts/predeploy.sh   # PRE_DEPLOY: migrate + createcachetable
+├── scripts/
+│   ├── predeploy.sh       # migrate + createcachetable
+│   └── start.sh           # Render başlangıç komutu: predeploy.sh + gunicorn
 ├── .pre-commit-config.yaml
-├── .do/
-│   └── app.yaml           # DigitalOcean App Platform tanımı
+├── render.yaml            # Render Blueprint (ücretsiz web servisi)
 ├── Dockerfile             # production imajı (multi-stage)
 ├── .dockerignore
 ├── docker-compose.yml     # yerel geliştirme: postgres:18 + api
@@ -322,7 +323,7 @@ rapid-quiz-frontend/
 │   ├── locales/        # tr.json
 │   └── router/
 ├── .do/app.yaml        # DigitalOcean static site tanımı
-├── .env.example        # VITE_API_BASE_URL
+├── .env.example        # VITE_API_BASE_URL, VITE_COLD_START_TIMEOUT_MS
 └── CLAUDE.md
 ```
 
@@ -359,24 +360,31 @@ Mobil uygulama backend'de hiçbir değişiklik gerektirmeden aynı `/api/v1/` u�
 - PostgreSQL'e özgü testler (`tests/test_postgres.py`): kısmi indeksin gerçekten kısmi olduğu ve sorgu planında kullanıldığı, tek-doğru-seçenek unique indeksi ve aynı soruya eş zamanlı cevapların yalnızca birinin sayılması. Yerelde SQLite ile atlanır; CI'da `REQUIRE_POSTGRES=1` olduğundan atlanamaz.
 - Backend kod kapsamı hedefi en az %80 (CI'da `--cov-fail-under=80`)
 
-**CI (GitHub Actions):** Her iki repoda da her PR'da lint + test çalışır. Backend: `postgres:18` servis konteyneriyle Python 3.13 ve 3.14 matrisinde `ruff check`, `ruff format --check`, `makemigrations --check` ve `pytest`; ayrıca production Dockerfile'ının (`python:3.14-slim`) derlendiği bir iş: imaj root olmayan kullanıcıyla çalışmalı, `scripts/predeploy.sh` PostgreSQL servisine karşı geçmeli, imaj `PORT=8080` ile ayağa kalkıp `/api/v1/health/` için 200 dönmeli ve throttle'lı bir uç nokta `DatabaseCache` tablosuna erişebilmelidir (duman testi).
+**CI (GitHub Actions):** Her iki repoda da her PR'da lint + test çalışır. Backend: `postgres:18` servis konteyneriyle Python 3.13 ve 3.14 matrisinde `ruff check`, `ruff format --check`, `makemigrations --check` ve `pytest`; ayrıca production Dockerfile'ının (`python:3.14-slim`) derlendiği bir iş: imaj root olmayan kullanıcıyla çalışmalı, `scripts/predeploy.sh` PostgreSQL servisine karşı geçmeli, imaj Render'ın kullandığı `scripts/start.sh` komutuyla `PORT=8080` üzerinde ayağa kalkıp `/api/v1/health/` için 200 dönmeli ve throttle'lı bir uç nokta `DatabaseCache` tablosuna erişebilmelidir (duman testi).
 
-### DigitalOcean Deployment
+### Deployment (ücretsiz kurulum)
 
-Her iki repo da DigitalOcean App Platform'a ayrı birer app olarak deploy edilir: backend Dockerfile'dan derlenen bir web servisi, frontend ise statik sitedir. Veritabanı DigitalOcean Managed PostgreSQL 18 kümesidir; App Platform PostgreSQL 14–18 arasını destekler ([DO PostgreSQL limitleri](https://docs.digitalocean.com/products/databases/postgresql/details/limits/)).
+Üç bileşen de ücretsiz katmanda çalışır; her biri ayrı bir servistir:
 
-| Bileşen | App Platform türü | Kaynak | Örnek alan adı |
+| Bileşen | Servis | Kaynak | Not |
 | --- | --- | --- | --- |
-| `rapid-quiz-api` | Service (Dockerfile) | `rapid-quiz-backend` reposu, `main` dalı | `api.rapidquiz.example.com` |
-| `migrate` | Job (PRE\_DEPLOY) | Aynı Dockerfile | — |
-| `rapid-quiz-web` | Static Site | `rapid-quiz-frontend` reposu, `main` dalı | `rapidquiz.example.com` |
-| `rapid-quiz-db` | Managed PostgreSQL 18 | DO Managed Databases | Yalnızca VPC içi erişim |
+| `rapid-quiz-api` | Render ücretsiz web servisi (Docker, Frankfurt) | `rapid-quiz-backend` reposu, `main` dalı, `render.yaml` | 15 dk hareketsizlikte uyur; uyanması 30–60 sn sürer |
+| `rapid-quiz-db` | Neon ücretsiz PostgreSQL 18 (Frankfurt) | Neon | Pooler'sız **doğrudan** bağlantı, `sslmode=require` |
+| `rapid-quiz-web` | DigitalOcean App Platform statik site | `rapid-quiz-frontend` reposu, `main` dalı | Ücretsiz |
 
-Bölge olarak Türkiye'ye en yakın veri merkezi olan Frankfurt (`fra`) önerilir; tüm bileşenler aynı bölgede olmalıdır. Frontend ve API farklı alt alan adlarında olduğu için backend'de CORS ayarı zorunludur.
+Tüm bileşenler Avrupa'dadır (Frankfurt). Frontend ve API farklı alan adlarında olduğu için backend'de CORS ayarı zorunludur.
+
+**Ücretsiz katmanın sınırları ve alınan önlemler**
+
+- **Pre-deploy komutu yok.** Render'da `preDeployCommand` yalnızca ücretli servislerde vardır. Bu yüzden `scripts/start.sh` her başlangıçta `scripts/predeploy.sh`'ı (`migrate --noinput`, `createcachetable`; ikisi de tekrar çalıştırılabilir) çalıştırır, ardından gunicorn'u başlatır. Betik hata verirse (`set -e`) sunucu açılmaz ve Render sürümü yayına almaz. Bunun bedeli: servis her uykudan uyandığında da çalıştığı için uyanma birkaç saniye uzar.
+- **Shell ve tek seferlik iş yok.** `seed_questions` ve `createsuperuser` geliştiricinin bilgisayarından, Neon bağlantı adresi `DATABASE_URL` ortam değişkeni olarak verilerek çalıştırılır (adım adım: backend `README.md`).
+- **Uyku ve soğuk başlangıç.** Render servisi 15 dakika trafik almazsa uyur. Frontend ilk istekte "Sunucu uyanıyor, lütfen bekleyin" mesajı gösterir; ilk istekler için zaman aşımı 90 sn'dir ve ağ/502/503/504 hatalarında otomatik yeniden denenir. Uyandıktan sonra normal 10 sn zaman aşımı geçerlidir. Neon da hareketsizlikte bilgi işlem kaynağını durdurur; ilk sorgu birkaç yüz ms–birkaç sn gecikebilir (`CONN_HEALTH_CHECKS` kopan bağlantıyı yeniler).
+- **Kaynaklar.** 512 MB RAM / 0,1 CPU olduğundan gunicorn 2 worker ile çalışır (`WEB_CONCURRENCY`). Ücretsiz örnekler aylık 750 saatle sınırlıdır. Aynı hesapta tek bir ücretsiz servis sürekli açık kalacak şekilde yeter.
+- **Tek örnek.** Throttle sayaçları yine `DatabaseCache`'tedir (Neon'da), bu yüzden worker'lar arasında paylaşılır.
 
 ### Backend Dockerfile
 
-Multi-stage build ile imaj küçük tutulur, uygulama root olmayan kullanıcıyla çalışır. `psycopg[binary]` kullanıldığı için imaja libpq kurmaya gerek yoktur. App Platform'un isteği ilettiği port `PORT` değişkeninden okunur.
+Multi-stage build ile imaj küçük tutulur, uygulama root olmayan kullanıcıyla çalışır. `psycopg[binary]` kullanıldığı için imaja libpq kurmaya gerek yoktur. Port `PORT` değişkeninden okunur (Render varsayılan olarak `10000` verir; Dockerfile'daki `8080` yalnızca yerel/CI varsayılanıdır).
 
 ```dockerfile
 # ---- build aşaması ----
@@ -406,58 +414,56 @@ CMD gunicorn config.wsgi:application --bind 0.0.0.0:${PORT} --workers 3 --timeou
 
 `.dockerignore` en az şunları içerir: `.git`, `.env`, `__pycache__/`, `*.pyc`, `.pytest_cache/`, `staticfiles/`, `docker-compose.yml`.
 
-### Backend App Spec (`.do/app.yaml`)
+Render, Dockerfile'daki `CMD` yerine `render.yaml`'daki `dockerCommand`'ı (`sh scripts/start.sh`) kullanır; `CMD` yerel ve CI kullanımı içindir.
 
-Migration'lar ve throttle için `createcachetable` her deploy'dan önce PRE\_DEPLOY job'ı ile çalışır; başarısız olursa yeni sürüm yayına alınmaz. İki komut `scripts/predeploy.sh` betiğinde (`set -e`; `migrate --noinput`, `createcachetable`) toplanmıştır, böylece `run_command`'da kabuk operatörüne (`&&`) bağımlılık kalmaz. `createcachetable` `migrate` ile çalışmaz, ayrıca verilmelidir; komut idempotenttir. Betik `sh` ile çağrılır, çalıştırma izni gerekmez; `.gitattributes` `*.sh` dosyalarını LF'de tutar. Üst düzeydeki `envs` hem servise hem job'a uygulanır.
+### Başlangıç betiği (`scripts/start.sh`)
+
+```sh
+#!/bin/sh
+set -e
+
+sh scripts/predeploy.sh   # migrate --noinput + createcachetable
+
+exec gunicorn config.wsgi:application \
+  --bind "0.0.0.0:${PORT:-8080}" \
+  --workers "${WEB_CONCURRENCY:-2}" \
+  --timeout 30 \
+  --access-logfile -
+```
+
+`scripts/predeploy.sh` (`set -e`; `migrate --noinput`, `createcachetable`) iki komutu bir arada tutar. `createcachetable` `migrate` ile çalışmaz, ayrıca verilmelidir; komut idempotenttir. Betikler `sh` ile çağrılır, çalıştırma izni gerekmez; `.gitattributes` `*.sh` dosyalarını LF'de tutar.
+
+### Backend Blueprint (`render.yaml`)
 
 ```yaml
-name: rapid-quiz-api
-region: fra
-envs:
-  - key: DATABASE_URL
-    scope: RUN_TIME
-    value: ${rapid-quiz-db.DATABASE_URL}
-  - key: DJANGO_SECRET_KEY
-    scope: RUN_TIME
-    type: SECRET
-    value: "<panelden girilir>"
-  - key: DJANGO_ALLOWED_HOSTS
-    scope: RUN_TIME
-    value: api.rapidquiz.example.com,${APP_DOMAIN}
-  - key: CORS_ALLOWED_ORIGINS
-    scope: RUN_TIME
-    value: https://rapidquiz.example.com
-  - key: CSRF_TRUSTED_ORIGINS
-    scope: RUN_TIME
-    value: https://api.rapidquiz.example.com
 services:
-  - name: api
-    github:
-      repo: <github-kullanıcı>/rapid-quiz-backend
-      branch: main
-      deploy_on_push: true
-    dockerfile_path: Dockerfile
-    http_port: 8080
-    instance_size_slug: apps-s-1vcpu-1gb
-    instance_count: 1
-    health_check:
-      http_path: /api/v1/health/
-jobs:
-  - name: migrate
-    kind: PRE_DEPLOY
-    github:
-      repo: <github-kullanıcı>/rapid-quiz-backend
-      branch: main
-    dockerfile_path: Dockerfile
-    run_command: sh scripts/predeploy.sh
-    instance_size_slug: apps-s-1vcpu-0.5gb
-databases:
-  - name: rapid-quiz-db
-    engine: PG
-    version: "18"
-    production: true
-    cluster_name: rapid-quiz-db
+  - type: web
+    name: rapid-quiz-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerCommand: sh scripts/start.sh
+    healthCheckPath: /api/v1/health/
+    autoDeployTrigger: commit
+    envVars:
+      - key: DATABASE_URL          # Neon doğrudan bağlantı adresi; panelden girilir
+        sync: false
+      - key: DJANGO_SECRET_KEY     # panelden girilir
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS  # frontend'in tam origin'i; panelden girilir
+        sync: false
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com,localhost,127.0.0.1
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://*.onrender.com
+      - key: NUM_PROXIES
+        value: "2"
+      - key: WEB_CONCURRENCY
+        value: "2"
 ```
+
+`sync: false` olan değerler repoda tutulmaz; Blueprint ilk kez uygulanırken Render panelden sorar. `autoDeployTrigger: commit` ile `main`'e giren her commit yayına çıkar. Bu yüzden `main` dalı korumalı olmalı ve GitHub Actions testleri geçmeden merge edilememelidir (isteğe bağlı olarak `checksPass` seçilebilir: Render, CI başarılı olmadan deploy etmez).
 
 ### Frontend App Spec (`.do/app.yaml`)
 
@@ -469,7 +475,7 @@ region: fra
 static_sites:
   - name: web
     github:
-      repo: <github-kullanıcı>/rapid-quiz-frontend
+      repo: feyzaozkul45/rapid-quiz-frontend
       branch: main
       deploy_on_push: true
     build_command: npm ci && npm run build
@@ -479,44 +485,52 @@ static_sites:
     envs:
       - key: VITE_API_BASE_URL
         scope: BUILD_TIME
-        value: https://api.rapidquiz.example.com/api/v1
+        value: https://rapid-quiz-api.onrender.com/api/v1
 ```
+
+Render servisinin gerçek adresi `rapid-quiz-api.onrender.com` ile aynı değilse (ad alınmışsa Render sonuna ek koyar) `VITE_API_BASE_URL` düzeltilip frontend yeniden derlenmelidir.
 
 ### Ortam Değişkenleri
 
 | Değişken | Repo | Production değeri | Not |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | backend | `${rapid-quiz-db.DATABASE_URL}` | DO otomatik doldurur, `sslmode=require` içerir |
-| `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | SECRET tipinde, repoya girmez |
+| `DATABASE_URL` | backend | Neon doğrudan bağlantı adresi | `sslmode=require` içerir; Render panelinde girilir (`sync: false`), repoya girmez |
+| `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | Render panelinde girilir, repoya girmez |
 | `DJANGO_SETTINGS_MODULE` | backend | `config.settings.prod` | Dockerfile'da tanımlı |
-| `DJANGO_ALLOWED_HOSTS` | backend | API alan adı + `${APP_DOMAIN}` |  |
-| `CORS_ALLOWED_ORIGINS` | backend | Frontend alan adı | Mobil uygulama için gerekmez |
-| `CSRF_TRUSTED_ORIGINS` | backend | API alan adı | Django Admin girişi için |
-| `NUM_PROXIES` | backend | `1` (varsayılan) | Gerçek istemci IP'si için X-Forwarded-For hop sayısı; deployment'ta doğrulanır |
-| `VITE_API_BASE_URL` | frontend | `https://api.…/api/v1` | BUILD\_TIME |
+| `DJANGO_ALLOWED_HOSTS` | backend | `.onrender.com,localhost,127.0.0.1` | `render.yaml`'da tanımlı; özel alan adı eklenirse buraya da eklenir |
+| `CORS_ALLOWED_ORIGINS` | backend | Frontend'in tam origin'i | Panelden girilir; sonunda `/` olmaz; mobil uygulama için gerekmez |
+| `CSRF_TRUSTED_ORIGINS` | backend | `https://*.onrender.com` | Django Admin girişi için |
+| `NUM_PROXIES` | backend | `2` (`render.yaml`) | Gerçek istemci IP'si için `X-Forwarded-For` zincirindeki güvenilir hop sayısı; **tahmindir, dağıtımdan sonra backend `README.md`'deki yöntemle doğrulanır** |
+| `WEB_CONCURRENCY` | backend | `2` | gunicorn worker sayısı (512 MB RAM) |
+| `PORT` | backend | Render verir (`10000`) | `scripts/start.sh` okur |
+| `VITE_API_BASE_URL` | frontend | `https://….onrender.com/api/v1` | BUILD\_TIME |
+| `VITE_COLD_START_TIMEOUT_MS` | frontend | verilmez (varsayılan `90000`) | İlk isteklerin zaman aşımı; `0` soğuk başlangıç korumasını kapatır (yerel geliştirmede `.env.example` bunu `0` yapar) |
 
 ### Production Ayarları Kontrol Listesi (`config/settings/prod.py`)
 
 - [ ] `DEBUG = False`, `SECRET_KEY` ve `ALLOWED_HOSTS` ortam değişkeninden okunur
-- [ ] `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` (App Platform TLS'i yük dengeleyicide sonlandırır)
+- [ ] `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` (Render TLS'i yük dengeleyicide sonlandırır)
 - [ ] `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` ve HSTS açık
 - [ ] Veritabanı `DATABASE_URL`'den okunur; `CONN_MAX_AGE = 60` ve `CONN_HEALTH_CHECKS = True`
 - [ ] WhiteNoise middleware'i eklenir, `STATIC_ROOT = BASE_DIR / "staticfiles"`
-- [ ] Loglar stdout'a yazılır (App Platform runtime loglarında görünür)
+- [ ] Loglar stdout'a yazılır (Render loglarında görünür)
 - [ ] `/api/v1/health/` veritabanına basit bir sorgu atar ve 200 döner
-- [ ] `SECURE_SSL_REDIRECT` bilerek kapalıdır: App Platform health check'i konteynere düz HTTP ile gelir ve yönlendirme bunu bozar; HTTP→HTTPS yönlendirmesini App Platform yapar (`check --deploy`'daki W008 ve HSTS preload uyarısı W021 kabul edilmiştir)
-- [ ] `createcachetable` çalışmış olmalı (throttle sayaçları `DatabaseCache`'te)
+- [ ] `SECURE_SSL_REDIRECT` bilerek kapalıdır: Render health check'i konteynere düz HTTP ile gelebilir ve yönlendirme bunu bozar; HTTP→HTTPS yönlendirmesini Render yapar (`check --deploy`'daki W008 ve HSTS preload uyarısı W021 kabul edilmiştir)
+- [ ] `createcachetable` çalışmış olmalı (throttle sayaçları `DatabaseCache`'te; `scripts/start.sh` her başlangıçta çalıştırır)
 
 ### İlk Kurulum Adımları
 
-1. Her iki repoyu GitHub'a it ve DigitalOcean hesabına GitHub erişimi ver.
-2. `doctl apps create --spec .do/app.yaml` ile backend app'ini oluştur; `DJANGO_SECRET_KEY` değerini panelden gir.
-3. İlk deploy bitince App Platform konsolunda `python manage.py seed_questions` ile soruları yükle ve `python manage.py createsuperuser` ile admin kullanıcısı oluştur.
-4. Frontend app'ini aynı komutla oluştur.
-5. Her iki app'e özel alan adlarını ekle; DNS kayıtları doğrulanınca SSL sertifikası otomatik çıkar.
-6. Veritabanı kümesinde "Trusted Sources" listesine yalnızca backend app'ini ekle.
+1. Her iki repoyu GitHub'a it (`feyzaozkul45/rapid-quiz-backend`, `feyzaozkul45/rapid-quiz-frontend`).
+2. Neon'da PostgreSQL 18 projesi oluştur (Frankfurt); **pooler'sız doğrudan** bağlantı adresini kopyala.
+3. Render'da **New → Blueprint** ile backend reposunu seç; `DATABASE_URL`, `DJANGO_SECRET_KEY` ve geçici bir `CORS_ALLOWED_ORIGINS` değerini panelden gir.
+4. İlk deploy bitince `/api/v1/health/` adresinin 200 döndüğünü doğrula.
+5. Kendi bilgisayarından Neon'a bağlanarak `seed_questions` ve `createsuperuser` komutlarını çalıştır (backend `README.md`'deki adımlar; bağlantı adresi yalnızca ortam değişkeni olarak verilir).
+6. Frontend'i DigitalOcean'da `doctl apps create --spec .do/app.yaml` ile oluştur; `VITE_API_BASE_URL` Render adresini göstermelidir.
+7. Frontend'in gerçek adresini Render'da `CORS_ALLOWED_ORIGINS` olarak güncelle.
+8. `NUM_PROXIES` doğrulamasını yap (backend `README.md`) ve gerekirse değeri düzelt.
+9. İstenirse her iki servise özel alan adı ekle; ekledikten sonra `DJANGO_ALLOWED_HOSTS` ve `CORS_ALLOWED_ORIGINS`'ı güncelle.
 
-`deploy_on_push` açık olduğu için `main`'e giren her commit yayına çıkar. Bu yüzden `main` dalı korumalı olmalı ve GitHub Actions testleri geçmeden merge edilememelidir.
+`main` dalı korumalı olmalı ve GitHub Actions testleri geçmeden merge edilememelidir.
 
 ### Yerel Geliştirme (`docker-compose.yml`)
 
@@ -575,6 +589,6 @@ Proje gereksinimleri: docs/PROJECT.md
 5. **Frontend iskeleti:** "Vue 3 + Vite + TS projesini Bölüm 9'daki yapıyla kur; API istemcisini /api/docs şemasına göre yaz."
 6. **Ekranlar:** "Ana ekran, quiz ekranı (5 sn geri sayım), sonuç ve skor tablosu ekranlarını yap; mobil tarayıcıda da çalışsın."
 7. **Test ve CI:** "Playwright ile tam bir quiz turunu test et; iki repo için GitHub Actions ekle."
-8. **Deployment:** "Bölüm 11'deki DigitalOcean bölümüne göre backend için Dockerfile, .dockerignore, prod ayarları ve .do/app.yaml; frontend için .do/app.yaml oluştur. Imajı yerelde derleyip gunicorn ile çalıştığını doğrula, doctl apps spec validate ile spec'leri kontrol et ve kurulum adımlarını README'ye yaz."
+8. **Deployment:** "Bölüm 11'deki ücretsiz kuruluma göre backend için Dockerfile, `scripts/start.sh` ve `render.yaml`, frontend için `.do/app.yaml` oluştur. Imajı yerelde derleyip çalıştığını doğrula, kurulum ve Neon üzerindeki veritabanı adımlarını README'lere yaz."
 
 Büyük fazlarda Claude Code'dan önce plan isteyin (plan mode), planı onaylayın, sonra uygulatın.

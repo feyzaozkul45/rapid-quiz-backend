@@ -24,3 +24,8 @@ Frontend reposu: ../RapidQuizFrontend
 - pytest
 - ruff check . && ruff format .
 - Yerel (Docker yok): .venv\Scripts\python manage.py ... ; DATABASE_URL yoksa SQLite kullanılır
+
+## Deployment (ücretsiz)
+- Render ücretsiz web servisi (`render.yaml`, Docker) + Neon PostgreSQL + DO statik site (frontend repo)
+- Ücretsiz Render'da pre-deploy yok: `scripts/start.sh` her başlangıçta migrate + createcachetable çalıştırır
+- Prod veritabanı komutları yerelden, `DATABASE_URL` ortam değişkeniyle çalıştırılır (adres repoya/komut geçmişine yazılmaz): README
