@@ -1,0 +1,86 @@
+name: Yazılım
+slug: yazilim
+description: Programlama, web teknolojileri ve yazılım geliştirme pratikleri
+icon: code
+order: 5
+questions:
+  - text: "HTML kısaltması neyin açılımıdır?"
+    difficulty: 1
+    choices: ["HyperText Markup Language", "High Tech Modern Language", "Hyper Transfer Mail Link", "Home Tool Markup Language"]
+    answer: 1
+  - text: "Web sayfalarını biçimlendirmek ve görünümünü düzenlemek için hangi dil kullanılır?"
+    difficulty: 1
+    choices: ["SQL", "CSS", "Bash", "YAML"]
+    answer: 2
+  - text: "Python'da aşağıdakilerden hangisi bir liste tanımıdır?"
+    difficulty: 1
+    choices: ["(1, 2, 3)", "{1, 2, 3}", "[1, 2, 3]", "<1, 2, 3>"]
+    answer: 3
+  - text: "Aşağıdakilerden hangisi bir sürüm kontrol sistemidir?"
+    difficulty: 1
+    choices: ["Docker", "Nginx", "Redis", "Git"]
+    answer: 4
+  - text: "Bir fonksiyonun kendi kendini çağırmasına ne ad verilir?"
+    difficulty: 2
+    choices: ["Özyineleme (recursion)", "Kapsülleme", "Çok biçimlilik", "Çöp toplama"]
+    answer: 1
+  - text: "Aşağıdakilerden hangisi nesne yönelimli programlamanın temel ilkelerinden biri değildir?"
+    difficulty: 2
+    choices: ["Soyutlama", "Kapsülleme", "Çok biçimlilik", "Derleme"]
+    answer: 4
+  - text: "REST API'lerde sunucudan veri okumak için genellikle hangi HTTP metodu kullanılır?"
+    difficulty: 1
+    choices: ["GET", "DELETE", "PATCH", "OPTIONS"]
+    answer: 1
+  - text: "HTTP 404 durum kodu ne anlama gelir?"
+    difficulty: 1
+    choices: ["Yetkisiz erişim", "Sunucu hatası", "Kaynak bulunamadı", "İstek başarılı"]
+    answer: 3
+  - text: "HTTP 500 durum kodu ne anlama gelir?"
+    difficulty: 2
+    choices: ["Yönlendirme", "Sunucu tarafında hata", "Geçersiz istek", "İçerik yok"]
+    answer: 2
+  - text: "JSON kısaltması neyin açılımıdır?"
+    difficulty: 1
+    choices: ["Java Standard Object Network", "JavaScript Object Notation", "Joint Script Online Node", "Java Syntax Open Naming"]
+    answer: 2
+  - text: "Tarayıcılarda doğrudan çalışan programlama dili hangisidir?"
+    difficulty: 1
+    choices: ["C", "Go", "Rust", "JavaScript"]
+    answer: 4
+  - text: "Uzak bir Git deposunu yerel makineye kopyalayan komut hangisidir?"
+    difficulty: 1
+    choices: ["git init", "git clone", "git merge", "git stash"]
+    answer: 2
+  - text: "Kodun en küçük parçalarını izole biçimde test etmeye ne ad verilir?"
+    difficulty: 2
+    choices: ["Yük testi", "Kabul testi", "Birim testi", "Duman testi"]
+    answer: 3
+  - text: "SQL'de tablodan veri seçmek için hangi komut kullanılır?"
+    difficulty: 1
+    choices: ["SELECT", "INSERT", "UPDATE", "DROP"]
+    answer: 1
+  - text: "Scrum'da genellikle 1–4 hafta süren kısa geliştirme döngüsüne ne ad verilir?"
+    difficulty: 2
+    choices: ["Backlog", "Sprint", "Release", "Hotfix"]
+    answer: 2
+  - text: "Yazılımda DRY ilkesi neyin kısaltmasıdır?"
+    difficulty: 2
+    choices: ["Do Rapid Yielding", "Data Row Yield", "Debug Run Yearly", "Don't Repeat Yourself"]
+    answer: 4
+  - text: "SOLID ilkelerindeki \"S\" harfi neyi temsil eder?"
+    difficulty: 3
+    choices: ["Simple Syntax", "Stateless Service", "Single Responsibility", "Scalable System"]
+    answer: 3
+  - text: "Aşağıdaki dillerden hangisi statik tipli ve derlenen bir dildir?"
+    difficulty: 2
+    choices: ["Python", "JavaScript", "Ruby", "Java"]
+    answer: 4
+  - text: "Bir uygulamayı bağımlılıklarıyla birlikte paketleyip yalıtılmış çalıştıran birime ne ad verilir?"
+    difficulty: 2
+    choices: ["Konteyner", "Derleyici", "Yönlendirici", "Önbellek"]
+    answer: 1
+  - text: "HTTPS kısaltmasındaki \"S\" harfi neyi ifade eder?"
+    difficulty: 2
+    choices: ["Server", "Secure", "Standard", "Simple"]
+    answer: 2

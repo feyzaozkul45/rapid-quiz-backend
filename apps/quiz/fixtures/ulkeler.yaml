@@ -1,0 +1,86 @@
+name: Ülkeler
+slug: ulkeler
+description: Başkentler, sınırlar ve dünya coğrafyası
+icon: globe
+order: 3
+questions:
+  - text: "Fransa'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Lyon", "Paris", "Marsilya", "Nice"]
+    answer: 2
+  - text: "Japonya'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Osaka", "Kyoto", "Hiroşima", "Tokyo"]
+    answer: 4
+  - text: "Avustralya'nın başkenti neresidir?"
+    difficulty: 2
+    choices: ["Sidney", "Melbourne", "Canberra", "Perth"]
+    answer: 3
+  - text: "Kanada'nın başkenti neresidir?"
+    difficulty: 2
+    choices: ["Toronto", "Ottawa", "Vancouver", "Montreal"]
+    answer: 2
+  - text: "Brezilya'nın başkenti neresidir?"
+    difficulty: 2
+    choices: ["Rio de Janeiro", "São Paulo", "Salvador", "Brasília"]
+    answer: 4
+  - text: "Nil Nehri hangi ülkeden geçerek Akdeniz'e dökülür?"
+    difficulty: 1
+    choices: ["Mısır", "Nijerya", "Libya", "Suudi Arabistan"]
+    answer: 1
+  - text: "Aşağıdakilerden hangisi Türkiye'nin kara komşusu değildir?"
+    difficulty: 2
+    choices: ["Yunanistan", "Gürcistan", "Irak", "Romanya"]
+    answer: 4
+  - text: "Aşağıdaki ülkelerden hangisi aynı zamanda bir kıtadır?"
+    difficulty: 1
+    choices: ["Kanada", "Hindistan", "Avustralya", "Meksika"]
+    answer: 3
+  - text: "İtalya'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Milano", "Roma", "Venedik", "Napoli"]
+    answer: 2
+  - text: "Mısır'ın başkenti neresidir?"
+    difficulty: 1
+    choices: ["İskenderiye", "Luksor", "Aswan", "Kahire"]
+    answer: 4
+  - text: "Arjantin'in başkenti neresidir?"
+    difficulty: 2
+    choices: ["Buenos Aires", "Santiago", "Montevideo", "Lima"]
+    answer: 1
+  - text: "Kenya'nın başkenti neresidir?"
+    difficulty: 3
+    choices: ["Mombasa", "Kampala", "Nairobi", "Addis Ababa"]
+    answer: 3
+  - text: "Almanya'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Münih", "Berlin", "Hamburg", "Frankfurt"]
+    answer: 2
+  - text: "Yüzölçümü bakımından dünyanın en küçük bağımsız ülkesi hangisidir?"
+    difficulty: 2
+    choices: ["Monako", "San Marino", "Lihtenştayn", "Vatikan"]
+    answer: 4
+  - text: "Aşağıdaki ülkelerden hangisinin toprakları hem Avrupa hem Asya kıtasındadır?"
+    difficulty: 1
+    choices: ["Türkiye", "Peru", "Japonya", "Polonya"]
+    answer: 1
+  - text: "Beyaz zemin üzerinde tek bir kırmızı daire bulunan bayrak hangi ülkeye aittir?"
+    difficulty: 1
+    choices: ["Polonya", "Kanada", "Japonya", "İsviçre"]
+    answer: 3
+  - text: "Portekiz'in başkenti neresidir?"
+    difficulty: 1
+    choices: ["Porto", "Lizbon", "Faro", "Madrid"]
+    answer: 2
+  - text: "Güney Amerika'da resmi dili Portekizce olan ülke hangisidir?"
+    difficulty: 1
+    choices: ["Arjantin", "Şili", "Peru", "Brezilya"]
+    answer: 4
+  - text: "Türkiye'nin başkenti neresidir?"
+    difficulty: 1
+    choices: ["Ankara", "İstanbul", "İzmir", "Bursa"]
+    answer: 1
+  - text: "Everest Dağı hangi iki ülkenin sınırında yer alır?"
+    difficulty: 3
+    choices: ["Hindistan ve Pakistan", "Butan ve Çin", "Nepal ve Çin", "Nepal ve Hindistan"]
+    answer: 3

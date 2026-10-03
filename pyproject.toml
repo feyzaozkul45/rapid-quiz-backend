@@ -5,6 +5,8 @@ extend-exclude = ["migrations"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "DJ"]
+# DJ001: şema (docs/PROJECT.md) gereği player_name/description/icon null olabilir
+ignore = ["DJ001"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.dev"

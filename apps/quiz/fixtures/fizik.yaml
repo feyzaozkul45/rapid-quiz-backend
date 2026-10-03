@@ -1,0 +1,86 @@
+name: Fizik
+slug: fizik
+description: Mekanik, elektrik, ısı ve modern fizik
+icon: atom
+order: 4
+questions:
+  - text: "Işığın boşluktaki hızı yaklaşık olarak kaçtır?"
+    difficulty: 1
+    choices: ["30.000 km/s", "300.000 km/s", "3.000.000 km/s", "3.000 km/s"]
+    answer: 2
+  - text: "Kuvvetin SI birimi nedir?"
+    difficulty: 1
+    choices: ["Joule", "Watt", "Pascal", "Newton"]
+    answer: 4
+  - text: "Dünya yüzeyinde yerçekimi ivmesi yaklaşık kaç m/s² değerindedir?"
+    difficulty: 1
+    choices: ["1,6", "3,7", "9,8", "24"]
+    answer: 3
+  - text: "Evrensel kütle çekim yasasını formüle eden bilim insanı kimdir?"
+    difficulty: 1
+    choices: ["Isaac Newton", "Galileo Galilei", "Albert Einstein", "Johannes Kepler"]
+    answer: 1
+  - text: "Kütle ile enerji arasındaki ilişkiyi veren E = mc² denklemi kime aittir?"
+    difficulty: 1
+    choices: ["Niels Bohr", "Albert Einstein", "Max Planck", "Richard Feynman"]
+    answer: 2
+  - text: "Enerjinin SI birimi nedir?"
+    difficulty: 1
+    choices: ["Newton", "Watt", "Volt", "Joule"]
+    answer: 4
+  - text: "Aşağıdakilerden hangisi boşlukta yayılabilir?"
+    difficulty: 2
+    choices: ["Ses dalgası", "Su dalgası", "Işık", "Deprem dalgası"]
+    answer: 3
+  - text: "Atom çekirdeğinde bulunan pozitif yüklü parçacık hangisidir?"
+    difficulty: 1
+    choices: ["Elektron", "Proton", "Nötron", "Foton"]
+    answer: 2
+  - text: "Ohm yasasına göre gerilim (V) nasıl hesaplanır?"
+    difficulty: 2
+    choices: ["V = I × R", "V = I / R", "V = R / I", "V = I + R"]
+    answer: 1
+  - text: "Gücün SI birimi nedir?"
+    difficulty: 1
+    choices: ["Joule", "Newton", "Ohm", "Watt"]
+    answer: 4
+  - text: "Mutlak sıfır sıcaklığı Celsius cinsinden yaklaşık kaç derecedir?"
+    difficulty: 2
+    choices: ["0 °C", "−100 °C", "−273,15 °C", "−373,15 °C"]
+    answer: 3
+  - text: "Enerjinin sürekli değil, kuantum adı verilen paketler hâlinde olduğunu öne süren bilim insanı kimdir?"
+    difficulty: 3
+    choices: ["Max Planck", "James Clerk Maxwell", "Ernest Rutherford", "Michael Faraday"]
+    answer: 1
+  - text: "Bir cismin mevcut hareket durumunu koruma eğilimine ne ad verilir?"
+    difficulty: 2
+    choices: ["Sürtünme", "Eylemsizlik (atalet)", "İvme", "Basınç"]
+    answer: 2
+  - text: "Frekansın SI birimi nedir?"
+    difficulty: 1
+    choices: ["Metre", "Saniye", "Amper", "Hertz"]
+    answer: 4
+  - text: "Newton'un ikinci hareket yasası hangisidir?"
+    difficulty: 2
+    choices: ["F = m + a", "F = m / a", "F = m × a", "F = m × v²"]
+    answer: 3
+  - text: "Beyaz ışığın bir prizmada renklerine ayrılması olayına ne ad verilir?"
+    difficulty: 2
+    choices: ["Yansıma", "Dispersiyon", "Kırınım", "Soğurma"]
+    answer: 2
+  - text: "Basıncın SI birimi nedir?"
+    difficulty: 2
+    choices: ["Pascal", "Newton", "Joule", "Kelvin"]
+    answer: 1
+  - text: "Işık ne tür bir dalgadır?"
+    difficulty: 2
+    choices: ["Boyuna mekanik dalga", "Ses dalgası", "Sıkışma dalgası", "Elektromanyetik dalga"]
+    answer: 4
+  - text: "Elektronu 1897'de keşfeden bilim insanı kimdir?"
+    difficulty: 3
+    choices: ["Ernest Rutherford", "James Chadwick", "J. J. Thomson", "Niels Bohr"]
+    answer: 3
+  - text: "\"Enerji yoktan var edilemez, vardan yok edilemez; yalnızca bir biçimden diğerine dönüşür\" ifadesi hangi ilkeyi anlatır?"
+    difficulty: 2
+    choices: ["Momentumun korunumu", "Enerjinin korunumu", "Arşimet ilkesi", "Pascal ilkesi"]
+    answer: 2

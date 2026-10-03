@@ -1,0 +1,86 @@
+name: Yapay Zeka
+slug: yapay-zeka
+description: Makine öğrenmesi, sinir ağları ve yapay zekanın temelleri
+icon: brain
+order: 1
+questions:
+  - text: "Transformer mimarisini tanıtan makale hangisidir?"
+    difficulty: 2
+    choices: ["Attention Is All You Need", "Deep Residual Learning for Image Recognition", "Generative Adversarial Nets", "ImageNet Classification with Deep Convolutional Neural Networks"]
+    answer: 1
+  - text: "\"Yapay zeka\" terimini 1956 Dartmouth çalıştayı için ilk kez öneren kişi kimdir?"
+    difficulty: 2
+    choices: ["Alan Turing", "Geoffrey Hinton", "John McCarthy", "Yann LeCun"]
+    answer: 3
+  - text: "Bir makinenin zeki davranıp davranmadığını sınayan ünlü testi kim önermiştir?"
+    difficulty: 1
+    choices: ["John von Neumann", "Alan Turing", "Ada Lovelace", "Claude Shannon"]
+    answer: 2
+  - text: "ChatGPT'yi geliştiren şirket hangisidir?"
+    difficulty: 1
+    choices: ["OpenAI", "Intel", "Oracle", "Adobe"]
+    answer: 1
+  - text: "Etiketli veriyle, yani doğru cevapları bilinen örneklerle model eğitmeye ne ad verilir?"
+    difficulty: 1
+    choices: ["Denetimsiz öğrenme", "Pekiştirmeli öğrenme", "Denetimli öğrenme", "Rastgele öğrenme"]
+    answer: 3
+  - text: "K-means algoritması hangi makine öğrenmesi türüne örnektir?"
+    difficulty: 2
+    choices: ["Denetimli öğrenme", "Denetimsiz öğrenme", "Pekiştirmeli öğrenme", "Transfer öğrenme"]
+    answer: 2
+  - text: "Evrişimli sinir ağları (CNN) en çok hangi alanda kullanılır?"
+    difficulty: 1
+    choices: ["Görüntü işleme", "Veritabanı yedekleme", "Ağ güvenliği duvarları", "Dosya sıkıştırma"]
+    answer: 1
+  - text: "Yapay sinir ağında nöronlar arasındaki bağlantının gücünü temsil eden değer nedir?"
+    difficulty: 2
+    choices: ["Epoch", "Batch boyutu", "Öğrenme oranı", "Ağırlık"]
+    answer: 4
+  - text: "Sinir ağlarında hatayı çıkıştan girişe doğru yayarak ağırlıkları güncelleyen algoritmanın adı nedir?"
+    difficulty: 2
+    choices: ["Geri yayılım (backpropagation)", "İleri yayılım", "Rastgele arama", "Veri artırma"]
+    answer: 1
+  - text: "Bir model eğitim verisinde çok başarılı, yeni verilerde başarısızsa bu duruma ne denir?"
+    difficulty: 2
+    choices: ["Eksik öğrenme", "Normalleştirme", "Aşırı öğrenme (overfitting)", "Çapraz doğrulama"]
+    answer: 3
+  - text: "Çekişmeli üretici ağları (GAN) ilk kez kim tanıtmıştır?"
+    difficulty: 3
+    choices: ["Andrew Ng", "Ian Goodfellow", "Geoffrey Hinton", "Yann LeCun"]
+    answer: 2
+  - text: "AlphaGo 2016'da hangi oyunda dünya çapında bir oyuncuyu yenerek büyük yankı uyandırdı?"
+    difficulty: 1
+    choices: ["Satranç", "Poker", "Dama", "Go"]
+    answer: 4
+  - text: "IBM'in Deep Blue bilgisayarı 1997'de hangi satranç şampiyonunu yendi?"
+    difficulty: 2
+    choices: ["Garry Kasparov", "Magnus Carlsen", "Bobby Fischer", "Anatoly Karpov"]
+    answer: 1
+  - text: "GPT kısaltmasındaki \"GPT\" neyin açılımıdır?"
+    difficulty: 2
+    choices: ["General Purpose Technology", "Graphical Processing Tool", "Generative Pre-trained Transformer", "Gradient Pooling Transformer"]
+    answer: 3
+  - text: "NLP kısaltması Türkçede neyi ifade eder?"
+    difficulty: 1
+    choices: ["Ağ Katmanı Protokolü", "Doğal Dil İşleme", "Sayısal Lojik Programlama", "Ölçeklenebilir Veri Platformu"]
+    answer: 2
+  - text: "Pekiştirmeli öğrenmede bir ajanın davranışına karşılık çevreden aldığı geri bildirime ne denir?"
+    difficulty: 2
+    choices: ["Ödül", "Epoch", "Etiket", "Kernel"]
+    answer: 1
+  - text: "Aşağıdakilerden hangisi popüler bir derin öğrenme kütüphanesidir?"
+    difficulty: 1
+    choices: ["jQuery", "Bootstrap", "PyTorch", "Flask"]
+    answer: 3
+  - text: "Bir sınıflandırma modelinin doğru ve yanlış tahminlerinin dağılımını gösteren tabloya ne ad verilir?"
+    difficulty: 3
+    choices: ["Gradyan tablosu", "Karmaşıklık matrisi (confusion matrix)", "Aktivasyon haritası", "Karar ağacı"]
+    answer: 2
+  - text: "Derin öğrenmeye katkılarıyla Geoffrey Hinton ve Yann LeCun ile birlikte 2018 Turing Ödülü'nü kim kazandı?"
+    difficulty: 3
+    choices: ["Andrew Ng", "Ian Goodfellow", "Demis Hassabis", "Yoshua Bengio"]
+    answer: 4
+  - text: "Yapay sinir ağlarında bir nöronun çıktısına doğrusal olmayan bir dönüşüm uygulayan fonksiyona ne ad verilir?"
+    difficulty: 2
+    choices: ["Kayıp fonksiyonu", "Aktivasyon fonksiyonu", "Hash fonksiyonu", "Ölçekleme fonksiyonu"]
+    answer: 2

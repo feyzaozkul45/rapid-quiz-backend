@@ -1,0 +1,86 @@
+name: Bilgisayar Mühendisliği
+slug: bilgisayar-muhendisligi
+description: Donanım, algoritmalar, ağlar ve işletim sistemleri
+icon: cpu
+order: 2
+questions:
+  - text: "Bir bayt (byte) kaç bitten oluşur?"
+    difficulty: 1
+    choices: ["4", "8", "16", "32"]
+    answer: 2
+  - text: "İkili (binary) sayı 1010'un onluk tabandaki karşılığı nedir?"
+    difficulty: 1
+    choices: ["8", "12", "10", "6"]
+    answer: 3
+  - text: "CPU kısaltması Türkçede neyi ifade eder?"
+    difficulty: 1
+    choices: ["Merkezi İşlem Birimi", "Grafik İşlem Birimi", "Ana Bellek Birimi", "Güç Dağıtım Birimi"]
+    answer: 1
+  - text: "Aşağıdakilerden hangisi uçucu (elektrik kesilince silinen) bellektir?"
+    difficulty: 1
+    choices: ["SSD", "Sabit disk", "USB bellek", "RAM"]
+    answer: 4
+  - text: "Aşağıdakilerden hangisi bir işletim sistemidir?"
+    difficulty: 1
+    choices: ["Python", "Linux", "HTTP", "SQL"]
+    answer: 2
+  - text: "Son giren ilk çıkar (LIFO) mantığıyla çalışan veri yapısı hangisidir?"
+    difficulty: 1
+    choices: ["Kuyruk", "Bağlı liste", "Yığın (stack)", "Hash tablosu"]
+    answer: 3
+  - text: "İlk giren ilk çıkar (FIFO) mantığıyla çalışan veri yapısı hangisidir?"
+    difficulty: 1
+    choices: ["Kuyruk (queue)", "Yığın", "İkili ağaç", "Küme"]
+    answer: 1
+  - text: "Sıralı bir dizide ikili arama (binary search) algoritmasının zaman karmaşıklığı nedir?"
+    difficulty: 2
+    choices: ["O(n)", "O(n²)", "O(1)", "O(log n)"]
+    answer: 4
+  - text: "Web sayfalarının tarayıcı ile sunucu arasında taşınmasında kullanılan protokol hangisidir?"
+    difficulty: 1
+    choices: ["SMTP", "DHCP", "HTTP", "SSH"]
+    answer: 3
+  - text: "IPv4 adresleri kaç bit uzunluğundadır?"
+    difficulty: 2
+    choices: ["16", "32", "64", "128"]
+    answer: 2
+  - text: "Bir veritabanı tablosunda her kaydı benzersiz biçimde tanımlayan alana ne ad verilir?"
+    difficulty: 2
+    choices: ["Birincil anahtar (primary key)", "İndeks", "Görünüm (view)", "Tetikleyici"]
+    answer: 1
+  - text: "SQL kısaltması neyin açılımıdır?"
+    difficulty: 1
+    choices: ["Simple Question Logic", "Standard Query Link", "System Quality Level", "Structured Query Language"]
+    answer: 4
+  - text: "Derleyici (compiler) ne yapar?"
+    difficulty: 2
+    choices: ["Programı satır satır yorumlar", "Kaynak kodu makine koduna çevirir", "Ağ trafiğini yönlendirir", "Veritabanı yedeği alır"]
+    answer: 2
+  - text: "Aşağıdakilerden hangisi bir sıralama algoritmasıdır?"
+    difficulty: 1
+    choices: ["Dijkstra", "Huffman", "Quick Sort", "BFS"]
+    answer: 3
+  - text: "Mantık işleminde 1 XOR 1 sonucu nedir?"
+    difficulty: 2
+    choices: ["1", "0", "2", "Tanımsız"]
+    answer: 2
+  - text: "İşletim sistemlerinde, iki veya daha fazla sürecin birbirinin kaynağını bekleyerek ilerleyememesi durumuna ne ad verilir?"
+    difficulty: 2
+    choices: ["Kilitlenme (deadlock)", "Sayfalama", "Önbellekleme", "Bağlam değiştirme"]
+    answer: 1
+  - text: "Git'te yapılan değişiklikleri depoya kaydeden komut hangisidir?"
+    difficulty: 1
+    choices: ["git push", "git status", "git clone", "git commit"]
+    answer: 4
+  - text: "OSI başvuru modeli kaç katmandan oluşur?"
+    difficulty: 2
+    choices: ["4", "5", "7", "9"]
+    answer: 3
+  - text: "Program ve verinin aynı bellekte tutulduğu bilgisayar mimarisi hangisidir?"
+    difficulty: 3
+    choices: ["Harvard mimarisi", "Von Neumann mimarisi", "RISC mimarisi", "Boru hattı (pipeline) mimarisi"]
+    answer: 2
+  - text: "Hash tablosunda anahtarla arama işleminin ortalama zaman karmaşıklığı nedir?"
+    difficulty: 3
+    choices: ["O(n)", "O(log n)", "O(1)", "O(n log n)"]
+    answer: 3
