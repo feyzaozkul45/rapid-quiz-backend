@@ -1,0 +1,9 @@
+.git
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+staticfiles/
+docker-compose.yml
+.venv/
+.idea/
