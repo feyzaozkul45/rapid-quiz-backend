@@ -12,6 +12,7 @@ TOLERANCE_SECONDS = 1
 POINTS_PER_CORRECT = 100
 MAX_SCORE = TOTAL_QUESTIONS * POINTS_PER_CORRECT
 INACTIVITY_LIMIT = timedelta(minutes=10)
+NAME_WINDOW = timedelta(minutes=30)  # quiz bitiminden sonra isim kaydı için tanınan süre
 
 PLAYER_NAME_MIN = 2
 PLAYER_NAME_MAX = 20
@@ -37,6 +38,10 @@ def remaining_seconds(served_at, now):
 
 def is_inactive(last_activity_at, now):
     return now - last_activity_at > INACTIVITY_LIMIT
+
+
+def is_name_window_open(finished_at, now):
+    return now - finished_at <= NAME_WINDOW
 
 
 def points_for_answer(is_correct, within_time):

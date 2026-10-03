@@ -1,7 +1,9 @@
+import os
 from datetime import datetime, timedelta
 
 import pytest
-from django.core.cache import cache
+from django.core.management import call_command
+from django.db import connection
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -10,11 +12,23 @@ from apps.quiz.models import Choice
 from .factories import make_category
 
 
-@pytest.fixture(autouse=True)
-def _clear_throttle_cache():
-    cache.clear()
-    yield
-    cache.clear()
+@pytest.fixture(scope="session")
+def django_db_setup(django_db_setup, django_db_blocker):
+    """Throttle için kullanılan DatabaseCache tablosu migrate ile oluşmaz.
+
+    Testler transaction içinde koştuğundan sayaçlar testler arasında sızmaz (rollback).
+    """
+    with django_db_blocker.unblock():
+        call_command("createcachetable", verbosity=0)
+
+
+@pytest.fixture
+def postgres_only():
+    """PostgreSQL'e özgü testler. CI'da (REQUIRE_POSTGRES=1) atlanmaz, hata verir."""
+    if connection.vendor != "postgresql":
+        if os.environ.get("REQUIRE_POSTGRES"):
+            pytest.fail(f"REQUIRE_POSTGRES=1 ama veritabanı {connection.vendor}")
+        pytest.skip("PostgreSQL gerektirir")
 
 
 class Clock:

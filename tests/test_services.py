@@ -81,3 +81,8 @@ def test_valid_player_names(name):
 )
 def test_invalid_player_names(name):
     assert services.validate_player_name(name) is not None
+
+
+def test_name_window_is_thirty_minutes():
+    assert services.is_name_window_open(T0, T0 + timedelta(minutes=30)) is True
+    assert services.is_name_window_open(T0, T0 + timedelta(minutes=30, seconds=1)) is False

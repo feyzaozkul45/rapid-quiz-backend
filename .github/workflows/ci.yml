@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Lint + test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: rapidquiz
+          POSTGRES_USER: rapidquiz
+          POSTGRES_PASSWORD: rapidquiz
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rapidquiz -d rapidquiz"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      DATABASE_URL: postgres://rapidquiz:rapidquiz@localhost:5432/rapidquiz
+      # Testler SQLite'a düşerse PostgreSQL'e özgü testler atlanmak yerine hata verir.
+      REQUIRE_POSTGRES: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements/*.txt
+
+      - name: Bağımlılıkları kur
+        run: pip install -r requirements/dev.txt
+
+      - name: Ruff (lint)
+        run: ruff check .
+
+      - name: Ruff (format)
+        run: ruff format --check .
+
+      - name: Migration'lar güncel mi?
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Test (PostgreSQL 18)
+        run: pytest -rs --cov-fail-under=80
+
+  docker:
+    name: Production imajı derlenir (python:3.14-slim)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker build
+        run: docker build -t rapid-quiz-backend:ci .
+      - name: Imaj gunicorn ile açılıyor mu?
+        run: |
+          docker run --rm -e DJANGO_SECRET_KEY=ci-only rapid-quiz-backend:ci \
+            python -c "import django, gunicorn; print(django.get_version(), gunicorn.__version__)"

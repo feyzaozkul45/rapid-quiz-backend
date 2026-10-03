@@ -440,3 +440,23 @@ def test_throttle_uses_forwarded_ip_when_proxies_configured(api, category, setti
         headers={"X-Forwarded-For": "1.1.1.1"},
     )
     assert limited.status_code == 429
+
+
+def test_player_name_window_closed_after_30_minutes(driver):
+    driver.play([True] * 20)
+    driver.clock.advance(30 * 60 + 1)
+    response = driver.api.patch(
+        f"{driver.base}/player-name/", {"player_name": "Ali"}, format="json"
+    )
+    assert response.status_code == 410
+    assert error_code(response) == "name_window_closed"
+    assert QuizSession.objects.get(pk=driver.session_id).player_name is None
+
+
+def test_player_name_accepted_inside_window(driver):
+    driver.play([True] * 20)
+    driver.clock.advance(29 * 60)
+    response = driver.api.patch(
+        f"{driver.base}/player-name/", {"player_name": "Ali"}, format="json"
+    )
+    assert response.status_code == 200

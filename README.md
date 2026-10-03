@@ -10,6 +10,7 @@ python -m venv .venv
 cp .env.example .env
 docker compose up -d db        # PostgreSQL (Docker yoksa DATABASE_URL'siz SQLite kullanılır)
 .venv/Scripts/python manage.py migrate
+.venv/Scripts/python manage.py createcachetable   # throttle sayaçları için DatabaseCache tablosu
 .venv/Scripts/python manage.py seed_questions
 .venv/Scripts/python manage.py runserver
 ```

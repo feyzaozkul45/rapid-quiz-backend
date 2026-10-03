@@ -11,10 +11,13 @@ Frontend reposu: ../RapidQuizFrontend
 
 ## Karar notları (docs/PROJECT.md'ye ek)
 - Süre toleransı: geçen süre <= 6 sn kabul
-- İsim: Unicode harf/rakam/boşluk/tire, trim + art arda boşluklar teke, 2–20 karakter; bir kez kaydedilir (2. deneme 409); yalnız completed oturuma
+- İsim: Unicode harf/rakam/boşluk/tire, trim + art arda boşluklar teke, 2–20 karakter; bir kez kaydedilir (2. deneme 409); yalnız completed oturuma, bitişten sonra 30 dk içinde (aksi 410 name_window_closed)
 - Skor tablosu: yalnız status=completed ve player_name dolu oturumlar
-- Throttle (IP başına): quiz başlatma 10/dk, isim kaydetme 10/dk, cevap 120/dk; gerçek IP için NUM_PROXIES
+- Throttle (IP başına): quiz başlatma 10/dk, isim kaydetme 10/dk, cevap 120/dk; gerçek IP için NUM_PROXIES; sayaçlar DatabaseCache'te (`createcachetable` şart)
 - Seed: `python manage.py seed_questions` (kategori başına YAML, idempotent)
+
+- PostgreSQL'e özgü testler tests/test_postgres.py'de (yerelde atlanır, CI'da REQUIRE_POSTGRES=1)
+- Ayrıntılı API/kural dokümanı docs/PROJECT.md'dedir ve kodla aynı tutulur
 
 ## Komutlar
 - docker compose up -d

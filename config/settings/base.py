@@ -64,6 +64,15 @@ DATABASES = {
 }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Throttle sayaçları tüm gunicorn worker'ları arasında paylaşılsın diye veritabanı cache'i.
+# Tablo `migrate` ile oluşmaz: `python manage.py createcachetable` gerekir.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "rapidquiz_cache",
+    },
+}
+
 LANGUAGE_CODE = "tr"
 TIME_ZONE = "UTC"
 USE_I18N = True

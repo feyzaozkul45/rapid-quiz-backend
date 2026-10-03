@@ -33,7 +33,11 @@ def _error_session_not_found():
 
 def _lock_session(session_id):
     try:
-        return QuizSession.objects.select_for_update().select_related("category").get(pk=session_id)
+        return (
+            QuizSession.objects.select_for_update(of=("self",))
+            .select_related("category")
+            .get(pk=session_id)
+        )
     except QuizSession.DoesNotExist:
         raise _error_session_not_found() from None
 
@@ -198,7 +202,8 @@ def get_result(session_id):
     return session
 
 
-def save_player_name(session_id, raw_name):
+def save_player_name(session_id, raw_name, now=None):
+    now = now or timezone.now()
     name = services.normalize_player_name(raw_name)
     message = services.validate_player_name(name)
     if message:
@@ -210,6 +215,12 @@ def save_player_name(session_id, raw_name):
             error = _error_session_expired()
         elif session.status != Status.COMPLETED:
             error = _error_session_not_completed()
+        elif not services.is_name_window_open(session.finished_at, now):
+            error = ApiError(
+                "name_window_closed",
+                "İsim kaydı için tanınan süre doldu.",
+                status.HTTP_410_GONE,
+            )
         elif session.player_name is not None:
             error = ApiError(
                 "name_already_set",
