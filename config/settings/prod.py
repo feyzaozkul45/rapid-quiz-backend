@@ -1,6 +1,7 @@
 from .base import *  # noqa: F403
 
 DEBUG = False
+REST_FRAMEWORK = {**REST_FRAMEWORK, "NUM_PROXIES": env.int("NUM_PROXIES", default=1)}  # noqa: F405
 SECRET_KEY = env("DJANGO_SECRET_KEY")  # noqa: F405 - prod'da zorunlu, varsayılan yok
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])  # noqa: F405
 

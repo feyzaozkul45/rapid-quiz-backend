@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import environ
+from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -71,6 +72,7 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+CORS_ALLOW_HEADERS = (*default_headers, "x-client-type", "x-client-version")
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 REST_FRAMEWORK = {
@@ -78,6 +80,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "config.api_errors.exception_handler",
+    # IP başına sınırlar; okul/operatör NAT'ı arkasındakiler için gevşek tutuldu.
+    "DEFAULT_THROTTLE_RATES": {
+        "quiz_start": "10/min",
+        "player_name": "10/min",
+        "answer": "120/min",
+    },
+    # Yük dengeleyici arkasında gerçek istemci IP'si için X-Forwarded-For'daki güvenilir hop sayısı.
+    "NUM_PROXIES": env.int("NUM_PROXIES", default=0),
 }
 
 SPECTACULAR_SETTINGS = {
