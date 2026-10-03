@@ -65,11 +65,68 @@ jobs:
   docker:
     name: Production imajı derlenir (python:3.14-slim)
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: rapidquiz
+          POSTGRES_USER: rapidquiz
+          POSTGRES_PASSWORD: rapidquiz
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rapidquiz -d rapidquiz"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # Konteyner host ağını kullanır, böylece servis konteynerine localhost:5432 ile erişir.
+      CONTAINER_ENV: >-
+        -e DJANGO_SECRET_KEY=ci-only-secret
+        -e DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
+        -e DATABASE_URL=postgres://rapidquiz:rapidquiz@localhost:5432/rapidquiz
+        -e PORT=8080
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Docker build
         run: docker build -t rapid-quiz-backend:ci .
-      - name: Imaj gunicorn ile açılıyor mu?
+
+      - name: Imaj root olmayan kullanıcıyla çalışıyor mu?
         run: |
-          docker run --rm -e DJANGO_SECRET_KEY=ci-only rapid-quiz-backend:ci \
-            python -c "import django, gunicorn; print(django.get_version(), gunicorn.__version__)"
+          uid=$(docker run --rm rapid-quiz-backend:ci id -u)
+          echo "uid=$uid"
+          test "$uid" != "0"
+
+      - name: PRE_DEPLOY betiği (migrate + createcachetable)
+        run: docker run --rm --network host $CONTAINER_ENV rapid-quiz-backend:ci sh scripts/predeploy.sh
+
+      - name: Duman testi - imaj PORT=8080 ile ayağa kalkar, health 200 döner
+        run: |
+          docker run -d --name api --network host $CONTAINER_ENV rapid-quiz-backend:ci
+          status=000
+          for i in $(seq 1 30); do
+            status=$(curl -s -o health.json -w '%{http_code}' http://localhost:8080/api/v1/health/ || true)
+            [ "$status" = "200" ] && break
+            sleep 1
+          done
+          echo "health status: $status"; cat health.json || true
+          if [ "$status" != "200" ]; then docker logs api; exit 1; fi
+          grep -q '"status": "ok"' health.json
+
+      - name: Duman testi - API uç noktaları ve throttle tablosu
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/categories/)
+          test "$code" = "200"
+          # Throttle'lı uç nokta DatabaseCache tablosuna dokunur; tablo yoksa 500 döner.
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+            -H 'Content-Type: application/json' -d '{"category":"yok"}' \
+            http://localhost:8080/api/v1/quiz-sessions/)
+          echo "quiz-sessions status: $code"
+          test "$code" = "400"
+
+      - name: Konteyner logları (hata ayıklama için)
+        if: always()
+        run: docker logs api || true

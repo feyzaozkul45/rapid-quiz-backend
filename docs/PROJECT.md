@@ -285,6 +285,7 @@ rapid-quiz-backend/
 ├── tests/                 # pytest (+ test_postgres.py: kısmi indeks, eş zamanlılık)
 ├── requirements/          # base.txt, dev.txt
 ├── .github/workflows/ci.yml
+├── scripts/predeploy.sh   # PRE_DEPLOY: migrate + createcachetable
 ├── .pre-commit-config.yaml
 ├── .do/
 │   └── app.yaml           # DigitalOcean App Platform tanımı
@@ -358,7 +359,7 @@ Mobil uygulama backend'de hiçbir değişiklik gerektirmeden aynı `/api/v1/` u�
 - PostgreSQL'e özgü testler (`tests/test_postgres.py`): kısmi indeksin gerçekten kısmi olduğu ve sorgu planında kullanıldığı, tek-doğru-seçenek unique indeksi ve aynı soruya eş zamanlı cevapların yalnızca birinin sayılması. Yerelde SQLite ile atlanır; CI'da `REQUIRE_POSTGRES=1` olduğundan atlanamaz.
 - Backend kod kapsamı hedefi en az %80 (CI'da `--cov-fail-under=80`)
 
-**CI (GitHub Actions):** Her iki repoda da her PR'da lint + test çalışır. Backend: `postgres:18` servis konteyneriyle Python 3.13 ve 3.14 matrisinde `ruff check`, `ruff format --check`, `makemigrations --check` ve `pytest`; ayrıca production Dockerfile'ının (`python:3.14-slim`) derlendiği bir iş.
+**CI (GitHub Actions):** Her iki repoda da her PR'da lint + test çalışır. Backend: `postgres:18` servis konteyneriyle Python 3.13 ve 3.14 matrisinde `ruff check`, `ruff format --check`, `makemigrations --check` ve `pytest`; ayrıca production Dockerfile'ının (`python:3.14-slim`) derlendiği bir iş: imaj root olmayan kullanıcıyla çalışmalı, `scripts/predeploy.sh` PostgreSQL servisine karşı geçmeli, imaj `PORT=8080` ile ayağa kalkıp `/api/v1/health/` için 200 dönmeli ve throttle'lı bir uç nokta `DatabaseCache` tablosuna erişebilmelidir (duman testi).
 
 ### DigitalOcean Deployment
 
@@ -407,7 +408,7 @@ CMD gunicorn config.wsgi:application --bind 0.0.0.0:${PORT} --workers 3 --timeou
 
 ### Backend App Spec (`.do/app.yaml`)
 
-Migration'lar ve throttle için `createcachetable` her deploy'dan önce PRE\_DEPLOY job'ı ile çalışır (`createcachetable` `migrate` ile çalışmaz, ayrıca verilmelidir; komut idempotenttir); başarısız olursa yeni sürüm yayına alınmaz. Üst düzeydeki `envs` hem servise hem job'a uygulanır.
+Migration'lar ve throttle için `createcachetable` her deploy'dan önce PRE\_DEPLOY job'ı ile çalışır; başarısız olursa yeni sürüm yayına alınmaz. İki komut `scripts/predeploy.sh` betiğinde (`set -e`; `migrate --noinput`, `createcachetable`) toplanmıştır, böylece `run_command`'da kabuk operatörüne (`&&`) bağımlılık kalmaz. `createcachetable` `migrate` ile çalışmaz, ayrıca verilmelidir; komut idempotenttir. Betik `sh` ile çağrılır, çalıştırma izni gerekmez; `.gitattributes` `*.sh` dosyalarını LF'de tutar. Üst düzeydeki `envs` hem servise hem job'a uygulanır.
 
 ```yaml
 name: rapid-quiz-api
@@ -448,7 +449,7 @@ jobs:
       repo: <github-kullanıcı>/rapid-quiz-backend
       branch: main
     dockerfile_path: Dockerfile
-    run_command: python manage.py migrate --noinput && python manage.py createcachetable
+    run_command: sh scripts/predeploy.sh
     instance_size_slug: apps-s-1vcpu-0.5gb
 databases:
   - name: rapid-quiz-db

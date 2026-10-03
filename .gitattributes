@@ -1,0 +1,2 @@
+# Kabuk betikleri Windows'ta CRLF'e çevrilirse konteynerde çalışmaz.
+*.sh text eol=lf
