@@ -8,6 +8,7 @@ api_v1 = [
     path("health/", views.health, name="health"),
     path("", include("apps.quiz.urls")),
     path("", include("apps.quiz_sessions.urls")),
+    path("", include("apps.leaderboard.urls")),
 ]
 
 urlpatterns = [
