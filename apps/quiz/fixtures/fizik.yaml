@@ -132,9 +132,9 @@ questions:
     difficulty: 1
     choices: ["Direnç", "Gerilim", "Kapasite", "Endüktans"]
     answer: 1
-  - text: "Bir atomun atom numarası, çekirdeğindeki hangi parçacığın sayısına eşittir?"
-    difficulty: 2
-    choices: ["Nötron", "Foton", "Proton", "Kuark"]
+  - text: "Ses, oda sıcaklığındaki havada yaklaşık kaç m/s hızla yayılır?"
+    difficulty: 1
+    choices: ["34 m/s", "3.400 m/s", "340 m/s", "340.000 m/s"]
     answer: 3
   - text: "Aşağıdakilerden hangisinin dalga boyu en kısadır?"
     difficulty: 2

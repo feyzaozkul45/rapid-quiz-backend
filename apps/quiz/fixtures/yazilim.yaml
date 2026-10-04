@@ -92,9 +92,9 @@ questions:
     difficulty: 1
     choices: ["const", "var", "let", "static"]
     answer: 1
-  - text: "HTTP 200 durum kodu ne anlama gelir?"
+  - text: "Bir uygulamanın veritabanını ve iş mantığını yöneten, kullanıcıya görünmeyen sunucu tarafı bölümüne ne ad verilir?"
     difficulty: 1
-    choices: ["Kaynak bulunamadı", "Sunucu hatası", "Yetkisiz erişim", "İstek başarılı"]
+    choices: ["Ön uç (frontend)", "Arayüz teması (theme)", "Sürüm etiketi (tag)", "Arka uç (backend)"]
     answer: 4
   - text: "Bir koleksiyondaki elemanları sırayla gezmek için yaygın kullanılan döngü yapısı hangisidir?"
     difficulty: 1

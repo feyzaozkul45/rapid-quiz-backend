@@ -140,9 +140,9 @@ questions:
     difficulty: 2
     choices: ["Merkezi işlemcinin saat hızını yükseltmek", "Ağ üzerindeki trafiği uçtan uca şifrelemek", "Dosyaları otomatik olarak buluta yedeklemek", "Sürece RAM'den büyük adres alanı sunmak"]
     answer: 4
-  - text: "Bir dizide (array) elemanlara indeks ile doğrudan erişimin zaman karmaşıklığı nedir?"
-    difficulty: 1
-    choices: ["O(n)", "O(log n)", "O(1)", "O(n²)"]
+  - text: "Şifrelemede, biri herkese açık diğeri gizli iki ayrı anahtar kullanan yönteme ne ad verilir?"
+    difficulty: 2
+    choices: ["Simetrik şifreleme", "Dizi şifreleme (stream cipher)", "Asimetrik şifreleme", "Blok şifreleme (block cipher)"]
     answer: 3
   - text: "Her düğümün en fazla iki çocuğu olabilen ağaç veri yapısına ne ad verilir?"
     difficulty: 2
