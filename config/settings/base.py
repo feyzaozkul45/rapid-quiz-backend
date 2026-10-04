@@ -3,10 +3,15 @@ from pathlib import Path
 import environ
 from corsheaders.defaults import default_headers
 
+from config.admin_url import normalize_admin_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / ".env")
+
+# Django Admin adresi. Varsayılan `admin/`; production'da tahmin edilmesi zor bir değer verin.
+ADMIN_URL = normalize_admin_url(env("ADMIN_URL", default="admin/"))
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="insecure-dev-key-change-me")
 DEBUG = False

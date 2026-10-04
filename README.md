@@ -33,6 +33,7 @@ Test: `.venv/Scripts/python -m pytest` — Lint: `ruff check . && ruff format .`
 2. Render'da **New → Blueprint** ile `rapid-quiz-backend` reposunu seç; `render.yaml` okunur. İstenen değerleri panelden gir:
    - `DATABASE_URL`: Neon adresi
    - `DJANGO_SECRET_KEY`: rastgele 50+ karakter (`python -c "import secrets; print(secrets.token_urlsafe(64))"`)
+   - `ADMIN_URL`: Django Admin'in adresi; `admin/` tahmin edilebilir olduğundan rastgele bir değer verin (ör. `python -c "import secrets; print(secrets.token_urlsafe(12))"` çıktısı + `/`). Verilmezse `admin/` kullanılır
    - `CORS_ALLOWED_ORIGINS`: frontend'in tam origin'i (`https://….ondigitalocean.app`, sonunda `/` olmadan)
 3. İlk deploy bitince `https://<servis>.onrender.com/api/v1/health/` adresinin `{"status": "ok", "database": "up"}` döndüğünü doğrula.
 4. Frontend'i DigitalOcean'da oluştururken `VITE_API_BASE_URL` değerini `https://<servis>.onrender.com/api/v1` yap.
@@ -73,7 +74,7 @@ Bu oturumdaki komutlar artık Neon'a gider (`DATABASE_URL` yoksa SQLite kullanı
 Remove-Item Env:DATABASE_URL
 ```
 
-Doğrulama: `https://<servis>.onrender.com/api/v1/categories/` 5 kategori döndürmeli; `https://<servis>.onrender.com/admin/` adresinden giriş yapılabilmeli.
+Doğrulama: `https://<servis>.onrender.com/api/v1/categories/` 5 kategori döndürmeli; Admin paneline `https://<servis>.onrender.com/<ADMIN_URL>` adresinden giriş yapılabilmeli (`ADMIN_URL` verilmediyse `admin/`).
 
 ### NUM_PROXIES doğrulaması (dağıtımdan sonra bir kez)
 

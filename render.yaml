@@ -16,6 +16,10 @@ services:
         sync: false
       - key: DJANGO_SECRET_KEY
         sync: false
+      # Django Admin adresi (ör. gizli-yol-9f3a/): tahmin edilmesi zor bir değer girin.
+      # Boş/verilmezse varsayılan admin/ kullanılır.
+      - key: ADMIN_URL
+        sync: false
       # Frontend'in (DigitalOcean statik site) tam origin'i, örn. https://rapid-quiz-web-xxxxx.ondigitalocean.app
       - key: CORS_ALLOWED_ORIGINS
         sync: false

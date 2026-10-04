@@ -459,6 +459,8 @@ services:
         sync: false
       - key: DJANGO_SECRET_KEY     # panelden girilir
         sync: false
+      - key: ADMIN_URL             # panelden girilir; verilmezse admin/
+        sync: false
       - key: CORS_ALLOWED_ORIGINS  # frontend'in tam origin'i; panelden girilir
         sync: false
       - key: DJANGO_ALLOWED_HOSTS
@@ -504,6 +506,7 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 | --- | --- | --- | --- |
 | `DATABASE_URL` | backend | Neon doğrudan bağlantı adresi | `sslmode=require` içerir; Render panelinde girilir (`sync: false`), repoya girmez |
 | `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | Render panelinde girilir, repoya girmez |
+| `ADMIN_URL` | backend | Tahmin edilmesi zor bir yol (ör. `gizli-yol-9f3a/`) | Django Admin adresi; varsayılan `admin/`. Yalnızca harf, rakam, `_`, `-`, `/`; panelden girilir (`sync: false`) |
 | `DJANGO_SETTINGS_MODULE` | backend | `config.settings.prod` | Dockerfile'da tanımlı |
 | `DJANGO_ALLOWED_HOSTS` | backend | `.onrender.com,localhost,127.0.0.1` | `render.yaml`'da tanımlı; özel alan adı eklenirse buraya da eklenir |
 | `CORS_ALLOWED_ORIGINS` | backend | Frontend'in tam origin'i | Panelden girilir; sonunda `/` olmaz; mobil uygulama için gerekmez |
@@ -517,6 +520,7 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 ### Production Ayarları Kontrol Listesi (`config/settings/prod.py`)
 
 - [ ] `DEBUG = False`, `SECRET_KEY` ve `ALLOWED_HOSTS` ortam değişkeninden okunur
+- [ ] Django Admin varsayılan `admin/` yolunda bırakılmaz: `ADMIN_URL` ortam değişkeniyle tahmin edilmesi zor bir yol verilir (parola denemelerine karşı ek savunma; admin girişinin ayrıca hız sınırı yoktur, bu yüzden uzun ve benzersiz bir süperkullanıcı parolası şarttır)
 - [ ] `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` (Render TLS'i yük dengeleyicide sonlandırır)
 - [ ] `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` ve HSTS açık
 - [ ] Veritabanı `DATABASE_URL`'den okunur; `CONN_MAX_AGE = 60` ve `CONN_HEALTH_CHECKS = True`
