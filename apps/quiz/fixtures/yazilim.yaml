@@ -88,7 +88,7 @@ questions:
     difficulty: 1
     choices: ["echo()", "write()", "print()", "show()"]
     answer: 3
-  - text: "JavaScript'te değeri sonradan değiştirilemeyen bir değişken tanımlamak için hangi anahtar kelime kullanılır?"
+  - text: "JavaScript'te yeniden atanamayan bir değişken tanımlamak için hangi anahtar kelime kullanılır?"
     difficulty: 1
     choices: ["const", "var", "let", "static"]
     answer: 1
@@ -126,7 +126,7 @@ questions:
     answer: 2
   - text: "Bir fonksiyona dışarıdan verilen değerlere ne ad verilir?"
     difficulty: 1
-    choices: ["Dönüş değerleri (returns)", "Sabitler (constants)", "Parametreler (arguments)", "İstisnalar (exceptions)"]
+    choices: ["Dönüş değerleri (returns)", "Sabitler (constants)", "Argümanlar (arguments)", "İstisnalar (exceptions)"]
     answer: 3
   - text: "Aşağıdakilerden hangisi belge tabanlı bir NoSQL veritabanıdır?"
     difficulty: 2
@@ -148,7 +148,7 @@ questions:
     difficulty: 2
     choices: ["Veri göçü (migration)", "Kod gizleme (obfuscation)", "Elle dağıtım (manual deploy)", "Sürekli entegrasyon (CI)"]
     answer: 4
-  - text: "Çalışma sırasında oluşan hata durumunu yakalayıp yönetmek için hangi yapı kullanılır?"
+  - text: "JavaScript'te çalışma sırasında oluşan hatayı yakalayıp yönetmek için hangi yapı kullanılır?"
     difficulty: 2
     choices: ["for / while", "try / catch", "import / export", "if / else"]
     answer: 2

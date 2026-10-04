@@ -112,13 +112,13 @@ questions:
     difficulty: 1
     choices: ["Quito", "Lima", "Bogota", "La Paz"]
     answer: 2
-  - text: "Norveç'in başkenti neresidir?"
+  - text: "Avusturya'nın resmi dili hangisidir?"
     difficulty: 1
-    choices: ["Oslo", "Bergen", "Stockholm", "Helsinki"]
+    choices: ["Almanca", "Macarca", "Fransızca", "Çekçe"]
     answer: 1
-  - text: "Vietnam'ın başkenti neresidir?"
+  - text: "Madagaskar hangi okyanusta yer alan bir ada ülkesidir?"
     difficulty: 2
-    choices: ["Ho Chi Minh Kenti", "Bangkok", "Phnom Penh", "Hanoi"]
+    choices: ["Atlas Okyanusu", "Pasifik Okyanusu", "Arktik Okyanusu", "Hint Okyanusu"]
     answer: 4
   - text: "Hindistan'ın başkenti neresidir?"
     difficulty: 1
@@ -128,9 +128,9 @@ questions:
     difficulty: 2
     choices: ["Guadalajara", "Cancún", "Mexico City", "Monterrey"]
     answer: 3
-  - text: "Polonya'nın başkenti neresidir?"
+  - text: "Aşağıdaki ülkelerden hangisi İspanya ile kara sınırı olan bir ülkedir?"
     difficulty: 1
-    choices: ["Varşova", "Krakov", "Gdansk", "Prag"]
+    choices: ["Portekiz", "İtalya", "Yunanistan", "Hollanda"]
     answer: 1
   - text: "Aşağıdaki ülkelerden hangisinin yüzölçümü en büyüktür?"
     difficulty: 2
@@ -140,9 +140,9 @@ questions:
     difficulty: 2
     choices: ["Hint Okyanusu", "Atlas Okyanusu", "Pasifik Okyanusu", "Arktik Okyanusu"]
     answer: 2
-  - text: "Danimarka'nın başkenti neresidir?"
-    difficulty: 1
-    choices: ["Aarhus", "Kopenhag", "Odense", "Oslo"]
+  - text: "Fransa ile İspanya arasında doğal sınır oluşturan dağ silsilesi hangisidir?"
+    difficulty: 2
+    choices: ["Alpler", "Pireneler", "Karpatlar", "Urallar"]
     answer: 2
   - text: "Aşağıdaki ülkelerden hangisi Asya kıtasında yer alır?"
     difficulty: 2
@@ -156,9 +156,9 @@ questions:
     difficulty: 2
     choices: ["Hollanda", "Macaristan", "Norveç", "Belçika"]
     answer: 3
-  - text: "Tayland'ın başkenti neresidir?"
+  - text: "Mısır'ın resmi dili hangisidir?"
     difficulty: 1
-    choices: ["Manila", "Cakarta", "Kuala Lumpur", "Bangkok"]
+    choices: ["Türkçe", "Farsça", "İbranice", "Arapça"]
     answer: 4
   - text: "Dünyanın en kalabalık kıtası hangisidir?"
     difficulty: 1
