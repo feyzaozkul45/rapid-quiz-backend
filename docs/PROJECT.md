@@ -445,7 +445,7 @@ services:
     dockerfilePath: ./Dockerfile
     dockerCommand: sh scripts/start.sh
     healthCheckPath: /api/v1/health/
-    autoDeployTrigger: commit
+    autoDeployTrigger: checksPass
     envVars:
       - key: DATABASE_URL          # Neon doğrudan bağlantı adresi; panelden girilir
         sync: false
@@ -463,7 +463,7 @@ services:
         value: "2"
 ```
 
-`sync: false` olan değerler repoda tutulmaz; Blueprint ilk kez uygulanırken Render panelden sorar. `autoDeployTrigger: commit` ile `main`'e giren her commit yayına çıkar. Bu yüzden `main` dalı korumalı olmalı ve GitHub Actions testleri geçmeden merge edilememelidir (isteğe bağlı olarak `checksPass` seçilebilir: Render, CI başarılı olmadan deploy etmez).
+`sync: false` olan değerler repoda tutulmaz; Blueprint ilk kez uygulanırken Render panelden sorar. `autoDeployTrigger: checksPass` ile `main`'e giren commit, GitHub Actions kontrolleri başarılı olunca yayına çıkar; CI kırmızıysa Render deploy etmez. Yine de `main` dalı korumalı olmalı ve testler geçmeden merge edilememelidir.
 
 ### Frontend App Spec (`.do/app.yaml`)
 

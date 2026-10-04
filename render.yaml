@@ -9,7 +9,7 @@ services:
     # Ücretsiz planda preDeployCommand yok: migrate + createcachetable başlangıçta çalışır.
     dockerCommand: sh scripts/start.sh
     healthCheckPath: /api/v1/health/
-    autoDeployTrigger: commit
+    autoDeployTrigger: checksPass
     envVars:
       # Neon doğrudan (pooler'sız) bağlantı adresi; sslmode=require içerir. Panelden girilir.
       - key: DATABASE_URL
