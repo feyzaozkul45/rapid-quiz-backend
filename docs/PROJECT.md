@@ -485,10 +485,10 @@ static_sites:
     envs:
       - key: VITE_API_BASE_URL
         scope: BUILD_TIME
-        value: https://rapid-quiz-api.onrender.com/api/v1
+        value: https://rapid-quiz-api-pqpc.onrender.com/api/v1
 ```
 
-Render servisinin gerçek adresi `rapid-quiz-api.onrender.com` ile aynı değilse (ad alınmışsa Render sonuna ek koyar) `VITE_API_BASE_URL` düzeltilip frontend yeniden derlenmelidir.
+Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur (ad alınmış olduğundan Render sonuna `-pqpc` ekledi). Adres değişirse `VITE_API_BASE_URL` düzeltilip frontend yeniden derlenmelidir.
 
 ### Ortam Değişkenleri
 
