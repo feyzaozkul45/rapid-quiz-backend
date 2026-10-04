@@ -96,6 +96,13 @@ REST_FRAMEWORK = {
         "quiz_start": "10/min",
         "player_name": "10/min",
         "answer": "120/min",
+        # Soru isteği: IP başına geniş sınır (rastgele oturum ID'siyle sayaç şişirmeyi sınırlar).
+        "question": "240/min",
+        # Oturum başına sınırlar (config/throttles.py): bir oturumda en fazla 20 soru/cevap vardır.
+        "answer_session": "40/min",
+        "question_session": "60/min",
+        # Salt okunur uç noktalar (kategoriler, sonuç, skor tablosu): IP başına geniş sınır.
+        "read": "300/min",
     },
     # Yük dengeleyici arkasında gerçek istemci IP'si için X-Forwarded-For'daki güvenilir hop sayısı.
     "NUM_PROXIES": env.int("NUM_PROXIES", default=0),

@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
+from config.throttles import AnswerSessionThrottle, QuestionSessionThrottle
+
 from . import serializers, services, workflow
 
 ERRORS = {
@@ -48,6 +50,9 @@ class QuizSessionCreateView(APIView):
 
 
 class CurrentQuestionView(APIView):
+    throttle_classes = [ScopedRateThrottle, QuestionSessionThrottle]
+    throttle_scope = "question"
+
     @extend_schema(
         summary="Sıradaki soruyu verir (doğru cevap olmadan)",
         responses={200: serializers.CurrentQuestionSerializer, **ERRORS},
@@ -59,7 +64,7 @@ class CurrentQuestionView(APIView):
 
 
 class AnswerView(APIView):
-    throttle_classes = [ScopedRateThrottle]
+    throttle_classes = [ScopedRateThrottle, AnswerSessionThrottle]
     throttle_scope = "answer"
 
     @extend_schema(
@@ -78,6 +83,9 @@ class AnswerView(APIView):
 
 
 class ResultView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "read"
+
     @extend_schema(
         summary="Biten quiz'in puan özetini verir",
         responses={200: serializers.ResultSerializer, **ERRORS},

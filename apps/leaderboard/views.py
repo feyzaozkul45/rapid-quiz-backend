@@ -1,6 +1,7 @@
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
 from apps.quiz.models import Category
@@ -13,6 +14,9 @@ from .serializers import LeaderboardQuerySerializer, LeaderboardSerializer
 
 
 class LeaderboardView(APIView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "read"
+
     @extend_schema(
         summary="Kategori skor tablosu (varsayılan top 10)",
         parameters=[

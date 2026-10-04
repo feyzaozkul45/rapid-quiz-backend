@@ -13,7 +13,8 @@ Frontend reposu: ../RapidQuizFrontend
 - Süre toleransı: geçen süre <= 6 sn kabul
 - İsim: Unicode harf/rakam/boşluk/tire, trim + art arda boşluklar teke, 2–20 karakter; bir kez kaydedilir (2. deneme 409); yalnız completed oturuma, bitişten sonra 30 dk içinde (aksi 410 name_window_closed)
 - Skor tablosu: yalnız status=completed ve player_name dolu oturumlar
-- Throttle (IP başına): quiz başlatma 10/dk, isim kaydetme 10/dk, cevap 120/dk; gerçek IP için NUM_PROXIES; sayaçlar DatabaseCache'te (`createcachetable` şart)
+- Throttle (IP başına): quiz başlatma 10/dk, isim kaydetme 10/dk, cevap 120/dk, soru 240/dk, okuma (categories/result/leaderboard) 300/dk; gerçek IP için NUM_PROXIES; sayaçlar DatabaseCache'te (`createcachetable` şart)
+- Throttle (oturum başına, `config/throttles.py`): cevap 40/dk, soru 60/dk; IP başlığından bağımsızdır. Yeni uç nokta eklerken throttle kapsamı da eklenir (health hariç)
 - Seed: `python manage.py seed_questions` (kategori başına YAML, idempotent); havuz kategori başına 40 soru, doğru şık konumu dengeli, doğru şık uzunluğu ipucu vermemeli (test_seed bunu denetler)
 - Tekrar önleme: istemci `recent_question_ids` (≤40 pozitif tam sayı, eskiden yeniye) gönderir; sunucu önce bunların dışından seçer, yetmezse en eski oynananlardan tamamlar (`services.choose_questions`)
 - Seçenek sırası oturum+soru başına deterministik karıştırılır (`services.shuffled_choices`); 300 ms'den hızlı seçenekli cevap puansız (`too_fast`)
