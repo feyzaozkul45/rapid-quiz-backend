@@ -1,6 +1,6 @@
 """Kategori başına YAML dosyasından soru yükleme (idempotent) ve doğrulama."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -23,6 +23,8 @@ class SeedStats:
     categories_created: int = 0
     questions_created: int = 0
     questions_updated: int = 0
+    questions_deactivated: int = 0
+    deactivated_texts: list[str] = field(default_factory=list)
 
 
 def load_files(directory):
@@ -79,7 +81,13 @@ def validate(files):
 
 
 @transaction.atomic
-def seed(files):
+def seed(files, deactivate_missing=False):
+    """YAML'daki kategori ve soruları yükler.
+
+    `deactivate_missing=True` ise yüklenen kategorilerde, YAML'da artık bulunmayan aktif sorular
+    pasifleştirilir (silinmez; mevcut oturumların cevap kayıtları korunur). YAML'da olmayan
+    kategorilere dokunulmaz. Varsayılan kapalıdır.
+    """
     errors = validate(files)
     if errors:
         raise SeedValidationError(errors)
@@ -96,6 +104,7 @@ def seed(files):
             },
         )
         stats.categories_created += created
+        yaml_texts = {q["text"].strip() for q in data["questions"]}
         for q in data["questions"]:
             question, q_created = Question.objects.update_or_create(
                 category=category,
@@ -107,6 +116,11 @@ def seed(files):
             else:
                 stats.questions_updated += 1
             _sync_choices(question, q)
+        if deactivate_missing:
+            stale = category.questions.filter(is_active=True).exclude(text__in=yaml_texts)
+            texts = list(stale.order_by("id").values_list("text", flat=True))
+            stats.questions_deactivated += stale.update(is_active=False)
+            stats.deactivated_texts.extend(texts)
     return stats
 
 

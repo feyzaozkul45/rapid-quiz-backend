@@ -12,11 +12,19 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--path", default=str(DEFAULT_DIR), help="YAML dosyalarının dizini")
+        parser.add_argument(
+            "--deactivate-missing",
+            action="store_true",
+            default=False,
+            help="YAML'da artık bulunmayan soruları (yüklenen kategorilerde) pasifleştirir; "
+            "silmez. Varsayılan kapalı. Soru metni değiştirildiğinde eski metnin aktif "
+            "kalmaması için kullanılır.",
+        )
 
     def handle(self, *args, **options):
         files = seeding.load_files(options["path"])
         try:
-            stats = seeding.seed(files)
+            stats = seeding.seed(files, deactivate_missing=options["deactivate_missing"])
         except seeding.SeedValidationError as exc:
             raise CommandError("Doğrulama hatası:\n- " + "\n- ".join(exc.errors)) from exc
         self.stdout.write(
@@ -25,3 +33,9 @@ class Command(BaseCommand):
                 f"{stats.questions_created} yeni soru, {stats.questions_updated} güncellenen soru."
             )
         )
+        if options["deactivate_missing"]:
+            self.stdout.write(
+                self.style.WARNING(f"Pasifleştirilen soru: {stats.questions_deactivated}")
+            )
+            for text in stats.deactivated_texts:
+                self.stdout.write(f"  - {text}")

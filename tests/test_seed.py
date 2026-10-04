@@ -143,3 +143,119 @@ def test_bundled_pool_is_large_and_answers_are_not_guessable():
         )
         # Rastgele beklenti %25; belirgin biçimde fazlası "en uzun şık doğrudur" ipucu olur.
         assert longest / len(questions) <= 0.40, (name, longest)
+
+
+# ---- --deactivate-missing ------------------------------------------------------------
+
+
+def _write_yaml(directory, slug, texts, name=None):
+    import yaml
+
+    data = {
+        "name": name or slug.upper(),
+        "slug": slug,
+        "questions": [
+            {"text": t, "difficulty": 1, "choices": ["a", "b", "c", "d"], "answer": 1}
+            for t in texts
+        ],
+    }
+    (directory / f"{slug}.yaml").write_text(yaml.safe_dump(data, allow_unicode=True), "utf-8")
+
+
+def _active_texts(slug):
+    return set(
+        Question.objects.filter(category__slug=slug, is_active=True).values_list("text", flat=True)
+    )
+
+
+@pytest.mark.django_db
+def test_deactivate_missing_is_off_by_default(tmp_path):
+    _write_yaml(tmp_path, "x", [f"Eski {i}" for i in range(20)])
+    run_seed(path=str(tmp_path))
+    _write_yaml(tmp_path, "x", [f"Eski {i}" for i in range(1, 20)] + ["Yeni 0"])
+
+    out = run_seed(path=str(tmp_path))
+
+    assert "Pasifleştirilen" not in out
+    assert "Eski 0" in _active_texts("x")  # eski metin aktif kalır
+    assert "Yeni 0" in _active_texts("x")
+
+
+@pytest.mark.django_db
+def test_deactivate_missing_deactivates_removed_questions_without_deleting(tmp_path):
+    _write_yaml(tmp_path, "x", [f"Eski {i}" for i in range(20)])
+    run_seed(path=str(tmp_path))
+    _write_yaml(tmp_path, "x", [f"Eski {i}" for i in range(2, 20)] + ["Yeni 0", "Yeni 1"])
+
+    out = run_seed(path=str(tmp_path), deactivate_missing=True)
+
+    assert "Pasifleştirilen soru: 2" in out
+    assert "Eski 0" in out and "Eski 1" in out  # hangileri olduğu yazılır
+    active = _active_texts("x")
+    assert len(active) == 20
+    assert not {"Eski 0", "Eski 1"} & active
+    assert {"Yeni 0", "Yeni 1"} <= active
+    # silinmedi: kayıt duruyor, yalnızca pasif
+    assert Question.objects.filter(text="Eski 0", is_active=False).exists()
+    assert Question.objects.filter(category__slug="x").count() == 22
+
+
+@pytest.mark.django_db
+def test_deactivate_missing_is_idempotent_and_reactivates_if_text_returns(tmp_path):
+    _write_yaml(tmp_path, "x", [f"S{i}" for i in range(20)])
+    run_seed(path=str(tmp_path))
+    _write_yaml(tmp_path, "x", [f"S{i}" for i in range(1, 20)] + ["Yeni"])
+    run_seed(path=str(tmp_path), deactivate_missing=True)
+
+    assert "Pasifleştirilen soru: 0" in run_seed(path=str(tmp_path), deactivate_missing=True)
+
+    _write_yaml(tmp_path, "x", [f"S{i}" for i in range(20)])  # S0 geri döndü
+    run_seed(path=str(tmp_path), deactivate_missing=True)
+    assert "S0" in _active_texts("x")
+    assert "Yeni" not in _active_texts("x")
+
+
+@pytest.mark.django_db
+def test_deactivate_missing_only_touches_categories_in_the_files(tmp_path):
+    other = Category.objects.create(name="Başka", slug="baska")
+    Question.objects.create(category=other, text="Başka soru", difficulty=1, is_active=True)
+    _write_yaml(tmp_path, "x", [f"S{i}" for i in range(20)])
+
+    run_seed(path=str(tmp_path), deactivate_missing=True)
+
+    assert _active_texts("baska") == {"Başka soru"}  # YAML'da olmayan kategoriye dokunulmaz
+
+
+@pytest.mark.django_db
+def test_deactivate_missing_keeps_active_pool_valid_for_quiz(tmp_path, api):
+    _write_yaml(tmp_path, "x", [f"S{i}" for i in range(20)])
+    run_seed(path=str(tmp_path))
+    _write_yaml(tmp_path, "x", [f"T{i}" for i in range(20)])
+    run_seed(path=str(tmp_path), deactivate_missing=True)
+
+    response = api.post("/api/v1/quiz-sessions/", {"category": "x"}, format="json")
+
+    assert response.status_code == 201  # aktif havuz hâlâ 20 soru
+
+
+def test_deactivate_missing_flag_defaults_to_false():
+    from apps.quiz.management.commands.seed_questions import Command
+
+    parser = Command().create_parser("manage.py", "seed_questions")
+    assert parser.parse_args([]).deactivate_missing is False
+    assert parser.parse_args(["--deactivate-missing"]).deactivate_missing is True
+
+
+# ---- içerik: İspanya kara komşusu sorusu -----------------------------------------------
+
+
+def test_spain_land_border_question_has_only_one_real_neighbour():
+    """Fransa, Andorra ve Fas (Ceuta/Melilla) İspanya'nın komşusudur: yanlış şıklarda olmamalı."""
+    files = dict(seeding.load_files(FIXTURE_DIR))
+    question = next(
+        q for q in files["ulkeler.yaml"]["questions"] if "İspanya ile kara sınırı" in q["text"]
+    )
+    wrong = [c for i, c in enumerate(question["choices"], 1) if i != question["answer"]]
+    neighbours = {"fransa", "andorra", "fas", "portekiz", "cebelitarık", "birleşik krallık"}
+    assert question["choices"][question["answer"] - 1] == "Portekiz"
+    assert not neighbours & {c.lower() for c in wrong}

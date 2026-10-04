@@ -64,6 +64,10 @@ Bu oturumdaki komutlar artık Neon'a gider (`DATABASE_URL` yoksa SQLite kullanı
 # 3) Soruları yükle (idempotent: tekrar çalıştırmak çoğaltmaz)
 .venv\Scripts\python manage.py seed_questions
 
+# 3b) Sonradan bir sorunun METNİNİ değiştirdiysen: eski metin aktif kalır (soru kimliği kategori+metindir).
+#     Bayrakla YAML'da artık olmayan sorular pasifleştirilir (silinmez, hangileri olduğu yazılır):
+.venv\Scripts\python manage.py seed_questions --deactivate-missing
+
 # 4) Admin kullanıcısı: kullanıcı adı, e-posta ve parolayı komut sorar
 .venv\Scripts\python manage.py createsuperuser
 ```
