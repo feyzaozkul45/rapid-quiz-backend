@@ -70,6 +70,9 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "rapidquiz_cache",
+        # Varsayılan MAX_ENTRIES=300'dür: aşılınca kayıtların üçte biri rastgele silinir ve throttle
+        # sayaçları sıfırlanır. Çok farklı IP/oturum anahtarı olsa bile sayaçlar korunsun.
+        "OPTIONS": {"MAX_ENTRIES": 100_000},
     },
 }
 

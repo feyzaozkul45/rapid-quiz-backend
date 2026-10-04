@@ -251,6 +251,7 @@ Bir cevabın puan alması için hem doğru olması hem de süre içinde gelmesi 
 8. Aynı oturuma eş zamanlı gelen istekler `select_for_update` ile sıraya konur: aynı soruya gelen iki cevaptan yalnızca biri sayılır, diğeri 409 `question_mismatch` alır.
 9. Soru gönderildikten sonra **300 ms dolmadan** gelen seçenekli cevap puansızdır (`too_fast: true`, `is_correct: false`, `points: 0`); soru yine kapanır. Bu, insan tepkisinin mümkün kılmadığı otomasyonu zorlaştırır. Süre dolduğu için gönderilen `choice_id: null` cevabı etkilenmez.
 10. Seçeneklerin sırası oturum ve soruya özgü karıştırılır (aynı oturumda aynı soru tekrar istenirse sıra değişmez); doğru şıkkın konumu sabit değildir.
+11. Temizlik: `python manage.py purge_sessions` (varsayılan `--days 7 --limit 5000`; `--dry-run` yalnızca sayar) 7 günden eski bitmemiş/süresi dolmuş oturumları ve isim girilmemiş tamamlanmış oturumları cevaplarıyla birlikte siler. İsmi girilmiş tamamlanmış oturumlara (skor tablosu) asla dokunmaz; `--days` en az 1'dir. Render'da `scripts/start.sh` her başlangıçta çalıştırır.
 
 **İstemci tarafı:** Geri sayım yalnızca görseldir. Süre dolunca istemci `choice_id: null` gönderir ve sonraki soruyu ister. Cevap butonları ilk tıklamada kilitlenir; sayfa yenilenirse aynı soru kalan süresiyle geri gelir.
 
@@ -281,15 +282,16 @@ rapid-quiz-backend/
 │   │   ├── management/commands/seed_questions.py
 │   │   └── seeding.py     # doğrulama + idempotent yükleme
 │   ├── quiz_sessions/     # QuizSession, SessionAnswer (django.contrib.sessions ile çakışmasın diye bu ad)
-│   │   ├── services.py    # puan/süre/isim kuralları: saf fonksiyonlar
-│   │   └── workflow.py    # oturum akışı (veritabanı, select_for_update)
+│   │   ├── services.py    # puan/süre/isim kuralları, soru seçimi, seçenek karıştırma: saf fonksiyonlar
+│   │   ├── workflow.py    # oturum akışı (veritabanı, select_for_update)
+│   │   └── purge.py       # eski oturum temizliği (purge_sessions komutu)
 │   └── leaderboard/       # skor tablosu sorguları ve view'lar
 ├── tests/                 # pytest (+ test_postgres.py: kısmi indeks, eş zamanlılık)
 ├── requirements/          # base.txt, dev.txt
 ├── .github/workflows/ci.yml
 ├── scripts/
 │   ├── predeploy.sh       # migrate + createcachetable
-│   └── start.sh           # Render başlangıç komutu: predeploy.sh + gunicorn
+│   └── start.sh           # Render başlangıç komutu: predeploy.sh + purge_sessions + gunicorn
 ├── .pre-commit-config.yaml
 ├── render.yaml            # Render Blueprint (ücretsiz web servisi)
 ├── Dockerfile             # production imajı (multi-stage)
@@ -382,7 +384,8 @@ Tüm bileşenler Avrupa'dadır (Frankfurt). Frontend ve API farklı alan adları
 - **Shell ve tek seferlik iş yok.** `seed_questions` ve `createsuperuser` geliştiricinin bilgisayarından, Neon bağlantı adresi `DATABASE_URL` ortam değişkeni olarak verilerek çalıştırılır (adım adım: backend `README.md`).
 - **Uyku ve soğuk başlangıç.** Render servisi 15 dakika trafik almazsa uyur. Frontend ilk istekte "Sunucu uyanıyor, lütfen bekleyin" mesajı gösterir; ilk istekler için zaman aşımı 90 sn'dir ve ağ/502/503/504 hatalarında otomatik yeniden denenir. Uyandıktan sonra normal 10 sn zaman aşımı geçerlidir. Neon da hareketsizlikte bilgi işlem kaynağını durdurur; ilk sorgu birkaç yüz ms–birkaç sn gecikebilir (`CONN_HEALTH_CHECKS` kopan bağlantıyı yeniler).
 - **Kaynaklar.** 512 MB RAM / 0,1 CPU olduğundan gunicorn 2 worker ile çalışır (`WEB_CONCURRENCY`). Ücretsiz örnekler aylık 750 saatle sınırlıdır. Aynı hesapta tek bir ücretsiz servis sürekli açık kalacak şekilde yeter.
-- **Tek örnek.** Throttle sayaçları yine `DatabaseCache`'tedir (Neon'da), bu yüzden worker'lar arasında paylaşılır.
+- **Tek örnek.** Throttle sayaçları yine `DatabaseCache`'tedir (Neon'da), bu yüzden worker'lar arasında paylaşılır. `MAX_ENTRIES` 100 000'dir (Django varsayılanı 300: aşılınca sayaçların üçte biri rastgele silinirdi).
+- **Veri büyümesi.** Neon ücretsiz planı 0,5 GB ile sınırlıdır. Ücretsiz Render'da cron olmadığından `purge_sessions` her başlangıçta çalışır (tek seferde en fazla 5000 oturum, başarısız olsa bile sunucu açılır). Servis sık uykuya yatıyorsa her uyanışta temizlik de yapılmış olur.
 
 ### Backend Dockerfile
 
@@ -425,6 +428,9 @@ Render, Dockerfile'daki `CMD` yerine `render.yaml`'daki `dockerCommand`'ı (`sh 
 set -e
 
 sh scripts/predeploy.sh   # migrate --noinput + createcachetable
+
+# eski oturumları temizle; başarısız olsa bile sunucu açılır
+python manage.py purge_sessions || echo "UYARI: purge_sessions başarısız oldu, devam ediliyor."
 
 exec gunicorn config.wsgi:application \
   --bind "0.0.0.0:${PORT:-8080}" \

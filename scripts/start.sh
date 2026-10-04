@@ -7,6 +7,10 @@ set -e
 
 sh scripts/predeploy.sh
 
+# Eski/terk edilmiş oturumları temizler (ücretsiz veritabanı dolmasın; ücretsiz planda cron yok).
+# Tek çalıştırmada sınırlı sayıda siler; başarısız olsa bile sunucu açılmalı.
+python manage.py purge_sessions || echo "UYARI: purge_sessions başarısız oldu, devam ediliyor."
+
 # Render PORT'u kendisi verir (varsayılan 10000). Ücretsiz plan 512 MB RAM / 0.1 CPU olduğundan
 # worker sayısı düşük tutulur; WEB_CONCURRENCY ile değiştirilebilir.
 exec gunicorn config.wsgi:application \

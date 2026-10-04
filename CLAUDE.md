@@ -30,5 +30,6 @@ Frontend reposu: ../RapidQuizFrontend
 
 ## Deployment (ücretsiz)
 - Render ücretsiz web servisi (`render.yaml`, Docker) + Neon PostgreSQL + DO statik site (frontend repo)
-- Ücretsiz Render'da pre-deploy yok: `scripts/start.sh` her başlangıçta migrate + createcachetable çalıştırır
+- Ücretsiz Render'da pre-deploy yok: `scripts/start.sh` her başlangıçta migrate + createcachetable çalıştırır, ardından `purge_sessions` (7 günden eski bitmemiş/isimsiz oturumlar; skor tablosu satırlarına dokunmaz)
+- DatabaseCache `MAX_ENTRIES=100000` (varsayılan 300 throttle sayaçlarını siler); değiştirme
 - Prod veritabanı komutları yerelden, `DATABASE_URL` ortam değişkeniyle çalıştırılır (adres repoya/komut geçmişine yazılmaz): README
