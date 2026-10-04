@@ -84,3 +84,83 @@ questions:
     difficulty: 3
     choices: ["O(n)", "O(log n)", "O(1)", "O(n log n)"]
     answer: 3
+  - text: "Bilgisayar belleğinde 1 kilobayt (KB) geleneksel ikili tanımda kaç bayttır?"
+    difficulty: 1
+    choices: ["1000", "512", "2048", "1024"]
+    answer: 4
+  - text: "Bir dosyayı sıkıştırırken orijinal verinin birebir geri elde edilebildiği yönteme ne ad verilir?"
+    difficulty: 2
+    choices: ["Kayıpsız sıkıştırma", "Kayıplı sıkıştırma", "Geri dönüşsüz sıkıştırma", "Kısmi sıkıştırma"]
+    answer: 1
+  - text: "Paketleri farklı ağlar arasında yönlendiren ağ aygıtı hangisidir?"
+    difficulty: 1
+    choices: ["Hoparlör (speaker)", "Tarayıcı (scanner)", "Yönlendirici (router)", "Yazıcı (printer)"]
+    answer: 3
+  - text: "Bağlantı kurup verinin eksiksiz ve sıralı ulaşmasını sağlamaya çalışan taşıma katmanı protokolü hangisidir?"
+    difficulty: 2
+    choices: ["UDP", "ICMP", "ARP", "TCP"]
+    answer: 4
+  - text: "Bir algoritmanın zaman karmaşıklığını ifade etmekte yaygın kullanılan gösterim hangisidir?"
+    difficulty: 2
+    choices: ["Sigma (Σ) gösterimi", "Big-O gösterimi", "Delta (Δ) gösterimi", "Gamma (Γ) gösterimi"]
+    answer: 2
+  - text: "Önbellek (cache) belleğinin temel amacı nedir?"
+    difficulty: 2
+    choices: ["Verileri kalıcı olarak güvenli biçimde yedeklemek", "Ağ bağlantısının bant genişliğini artırmak", "Sık kullanılan verilere hızlı erişim sağlamak", "Ekran kartının çözünürlüğünü yükseltmek"]
+    answer: 3
+  - text: "Alan adlarını (ör. example.com) IP adreslerine çeviren sistem hangisidir?"
+    difficulty: 1
+    choices: ["DNS", "DHCP", "FTP", "SMTP"]
+    answer: 1
+  - text: "Bir programın çalışmakta olan örneğine ne ad verilir?"
+    difficulty: 1
+    choices: ["Süreç (process)", "Dosya (file)", "Sürücü (driver)", "Kütüphane (library)"]
+    answer: 1
+  - text: "Aşağıdakilerden hangisi ilişkisel (SQL tabanlı) bir veritabanı yönetim sistemidir?"
+    difficulty: 2
+    choices: ["Redis", "Neo4j", "MariaDB", "Cassandra"]
+    answer: 3
+  - text: "İşletim sistemi çekirdeğini belleğe yükleyip başlatan küçük program hangisidir?"
+    difficulty: 2
+    choices: ["Sıkıştırıcı (archiver)", "Önyükleyici (bootloader)", "Yorumlayıcı (interpreter)", "Hata ayıklayıcı (debugger)"]
+    answer: 2
+  - text: "Mantık kapılarından hangisi, yalnızca tüm girişleri 1 olduğunda 1 üretir?"
+    difficulty: 1
+    choices: ["OR", "XOR", "NOT", "AND"]
+    answer: 4
+  - text: "Ağa bağlı her cihazın ağ kartına üretici tarafından verilen donanım adresine ne ad verilir?"
+    difficulty: 1
+    choices: ["IP adresi", "MAC adresi", "Port numarası", "Ağ geçidi"]
+    answer: 2
+  - text: "Bir yazılımın işlevlerinin başka yazılımlar tarafından kullanılmasını sağlayan arayüze ne ad verilir?"
+    difficulty: 1
+    choices: ["API", "GUI", "CLI", "IDE"]
+    answer: 1
+  - text: "Sanal belleğin (virtual memory) temel amacı nedir?"
+    difficulty: 2
+    choices: ["Merkezi işlemcinin saat hızını yükseltmek", "Ağ üzerindeki trafiği uçtan uca şifrelemek", "Dosyaları otomatik olarak buluta yedeklemek", "Sürece RAM'den büyük adres alanı sunmak"]
+    answer: 4
+  - text: "Bir dizide (array) elemanlara indeks ile doğrudan erişimin zaman karmaşıklığı nedir?"
+    difficulty: 1
+    choices: ["O(n)", "O(log n)", "O(1)", "O(n²)"]
+    answer: 3
+  - text: "Her düğümün en fazla iki çocuğu olabilen ağaç veri yapısına ne ad verilir?"
+    difficulty: 2
+    choices: ["Üçlü ağaç (ternary tree)", "Kapsayan ağaç (spanning tree)", "İkili ağaç (binary tree)", "Karma ağacı (hash tree)"]
+    answer: 3
+  - text: "Ondalık 255 sayısının onaltılık (hexadecimal) karşılığı nedir?"
+    difficulty: 2
+    choices: ["FF", "EE", "1F", "FE"]
+    answer: 1
+  - text: "Bir işlemcinin saat hızı hangi birimle ölçülür?"
+    difficulty: 1
+    choices: ["Piksel (px)", "Bayt (B)", "Watt (W)", "Hertz (Hz)"]
+    answer: 4
+  - text: "Ağ üzerinde iletilen verinin parçalara bölünmüş her birine ne ad verilir?"
+    difficulty: 1
+    choices: ["Çerez (cookie)", "Paket (packet)", "Oturum (session)", "Sertifika (certificate)"]
+    answer: 2
+  - text: "Bir işletim sisteminde çekirdeğin (kernel) temel görevlerinden biri nedir?"
+    difficulty: 2
+    choices: ["Web sayfası tasarlamak ve yayınlamak", "Bellek ve süreç yönetimi yapmak", "Kaynak kodu otomatik biçimlendirmek", "Ekran görüntüsü almak ve paylaşmak"]
+    answer: 2

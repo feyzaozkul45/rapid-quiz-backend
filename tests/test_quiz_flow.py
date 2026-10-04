@@ -5,6 +5,7 @@ import pytest
 from apps.quiz.models import Choice
 from apps.quiz_sessions.models import QuizSession, SessionAnswer
 
+from .conftest import QuizDriver
 from .factories import CategoryFactory, make_category
 
 pytestmark = pytest.mark.django_db
@@ -135,6 +136,7 @@ def test_correct_answer_gives_100_points(driver):
         "is_correct": True,
         "correct_choice_id": correct,
         "points": 100,
+        "too_fast": False,
         "is_last": False,
         "score_so_far": 100,
     }
@@ -157,7 +159,9 @@ def test_wrong_answer_and_null_answer_give_zero(driver):
     assert row.selected_choice is None
 
 
-@pytest.mark.parametrize(("delay", "counted"), [(0.2, True), (5, True), (6, True), (6.5, False)])
+@pytest.mark.parametrize(
+    ("delay", "counted"), [(0.3, True), (0.5, True), (5, True), (6, True), (6.5, False)]
+)
 def test_time_boundaries_via_api(driver, delay, counted):
     q = driver.question().json()
     driver.clock.advance(delay)
@@ -189,6 +193,7 @@ def test_question_mismatch_returns_409(driver):
 
 def test_second_answer_to_same_question_rejected(driver):
     q = driver.question().json()
+    driver.clock.advance(1)
     assert driver.answer(q["question_id"], driver.correct_id(q["question_id"])).status_code == 200
     again = driver.answer(q["question_id"], driver.correct_id(q["question_id"]))
     assert again.status_code == 409
@@ -460,3 +465,133 @@ def test_player_name_accepted_inside_window(driver):
         f"{driver.base}/player-name/", {"player_name": "Ali"}, format="json"
     )
     assert response.status_code == 200
+
+
+# ---- tekrar önleme (recent_question_ids) -------------------------------------------
+
+
+def _start(api, **body):
+    return api.post("/api/v1/quiz-sessions/", {"category": "havuz", **body}, format="json")
+
+
+def _question_ids(response):
+    session = QuizSession.objects.get(pk=response.json()["session_id"])
+    return {r.question_id for r in session.answers.all()}
+
+
+@pytest.fixture
+def pool40(db):
+    return make_category(40, slug="havuz")
+
+
+def test_recent_question_ids_are_avoided_when_enough_fresh_questions(api, pool40):
+    ids = sorted(pool40.questions.values_list("id", flat=True))
+    recent = ids[:20]
+    for _ in range(3):
+        response = _start(api, recent_question_ids=recent)
+        assert response.status_code == 201
+        assert _question_ids(response) == set(ids[20:])
+
+
+def test_recent_question_ids_fill_up_with_oldest_when_not_enough(api, pool40):
+    ids = sorted(pool40.questions.values_list("id", flat=True))
+    recent = ids[:35]  # eskiden yeniye
+    chosen = _question_ids(_start(api, recent_question_ids=recent))
+    assert set(ids[35:]) <= chosen
+    assert chosen - set(ids[35:]) == set(ids[:15])
+
+
+def test_recent_question_ids_optional_and_empty_allowed(api, pool40):
+    assert _start(api).status_code == 201
+    assert _start(api, recent_question_ids=[]).status_code == 201
+
+
+def test_recent_question_ids_unknown_ids_are_ignored(api, pool40):
+    response = _start(api, recent_question_ids=[10**9, 2_147_483_647])
+    assert response.status_code == 201
+    assert len(_question_ids(response)) == 20
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        list(range(1, 42)),  # 41 ID: sınır aşımı
+        ["1", "2"],  # sayı değil, metin
+        [1.5],
+        [True],
+        [None],
+        [0],
+        [-3],
+        [2_147_483_648],
+        [[1]],
+        "1,2,3",
+        {"a": 1},
+        123,
+    ],
+)
+def test_recent_question_ids_validation(api, pool40, bad):
+    response = _start(api, recent_question_ids=bad)
+    assert response.status_code == 400, response.content
+    assert error_code(response) == "validation_error"
+    assert "recent_question_ids" in response.json()["error"]["details"]
+
+
+def test_recent_question_ids_exactly_40_is_accepted(api, pool40):
+    ids = list(pool40.questions.values_list("id", flat=True))
+    assert len(ids) == 40
+    assert _start(api, recent_question_ids=ids).status_code == 201
+
+
+# ---- seçenek sırası ------------------------------------------------------------------
+
+
+def test_choice_order_is_stable_within_session_and_not_the_stored_order(api, clock, category):
+    shuffled_somewhere = False
+    for _ in range(8):  # başlatma limiti 10/dk
+        session_driver = QuizDriver(api, clock, category)
+        a = session_driver.question().json()
+        b = session_driver.question().json()
+        ids = [c["id"] for c in a["choices"]]
+        assert ids == [c["id"] for c in b["choices"]]  # aynı oturumda yenilemede değişmez
+        shuffled_somewhere |= ids != sorted(ids)  # veritabanı sırasından farklı olabilir
+    # Hepsinin sıralı gelme olasılığı (1/24)^8: pratikte sıfır
+    assert shuffled_somewhere
+
+
+def test_every_session_question_keeps_all_four_choices_after_shuffle(driver):
+    q = driver.question().json()
+    stored = set(Choice.objects.filter(question_id=q["question_id"]).values_list("id", flat=True))
+    assert {c["id"] for c in q["choices"]} == stored
+    assert len(q["choices"]) == 4
+
+
+# ---- 300 ms'den hızlı cevap ----------------------------------------------------------
+
+
+def test_answer_faster_than_300ms_gets_no_points_and_is_flagged(driver):
+    q = driver.question().json()
+    driver.clock.advance(0.1)
+    correct = driver.correct_id(q["question_id"])
+    body = driver.answer(q["question_id"], correct).json()
+    assert body["too_fast"] is True
+    assert body["is_correct"] is False
+    assert body["points"] == 0
+    assert body["score_so_far"] == 0
+    session = QuizSession.objects.get(pk=driver.session_id)
+    assert session.correct_count == 0
+    assert session.current_index == 1  # soru yine de kapanır
+
+
+def test_answer_at_or_after_300ms_is_scored_normally(driver):
+    q = driver.question().json()
+    driver.clock.advance(0.3)
+    body = driver.answer(q["question_id"], driver.correct_id(q["question_id"])).json()
+    assert body["too_fast"] is False
+    assert body["points"] == 100
+
+
+def test_timeout_null_answer_is_never_flagged_too_fast(driver):
+    q = driver.question().json()
+    body = driver.answer(q["question_id"], None).json()
+    assert body["too_fast"] is False
+    assert body["points"] == 0

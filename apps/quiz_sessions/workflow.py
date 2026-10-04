@@ -1,7 +1,5 @@
 """Quiz oturumu akışı (veritabanı işlemleri). Kurallar services.py'dedir."""
 
-import random
-
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import status
@@ -73,9 +71,10 @@ def _apply_answer(session, row, choice, now):
     choices = list(row.question.choices.all())
     correct = next(c for c in choices if c.is_correct)
     within_time = services.is_within_time(row.served_at, now)
+    too_fast = choice is not None and services.is_too_fast(row.served_at, now)
     is_correct = choice is not None and choice.pk == correct.pk
-    points = services.points_for_answer(is_correct, within_time)
-    counted_correct = is_correct and within_time
+    points = services.points_for_answer(is_correct, within_time, too_fast)
+    counted_correct = points > 0
 
     row.answered_at = now
     # Süre aşıldıysa cevap yok sayılır: seçilen seçenek kaydedilmez (null = süre doldu).
@@ -93,10 +92,10 @@ def _apply_answer(session, row, choice, now):
     if is_last:
         _finish(session, now)
     session.save()
-    return counted_correct, correct.pk, points, is_last
+    return counted_correct, correct.pk, points, is_last, too_fast
 
 
-def start_session(category, client_type):
+def start_session(category, client_type, recent_question_ids=()):
     ids = list(
         Question.objects.filter(category=category, is_active=True).values_list("id", flat=True)
     )
@@ -104,7 +103,8 @@ def start_session(category, client_type):
         raise ApiError(
             "category_unavailable", "Bu kategoride yeterli soru yok.", status.HTTP_409_CONFLICT
         )
-    selected = random.sample(ids, services.TOTAL_QUESTIONS)  # sıra da karışık gelir
+    # Son oynananlar en sona bırakılır; sıra da karışık gelir.
+    selected = services.choose_questions(ids, recent_question_ids)
     with transaction.atomic():
         session = QuizSession.objects.create(category=category, client_type=client_type)
         SessionAnswer.objects.bulk_create(
@@ -140,7 +140,12 @@ def get_current_question(session_id, now=None):
                 "total": services.TOTAL_QUESTIONS,
                 "question_id": row.question_id,
                 "text": row.question.text,
-                "choices": [{"id": c.pk, "text": c.text} for c in row.question.choices.all()],
+                "choices": [
+                    {"id": c.pk, "text": c.text}
+                    for c in services.shuffled_choices(
+                        session.pk, row.question_id, row.question.choices.all()
+                    )
+                ],
                 "time_limit_seconds": services.TIME_LIMIT_SECONDS,
                 "served_at": row.served_at,
                 "remaining_seconds": round(services.remaining_seconds(row.served_at, now), 3),
@@ -177,11 +182,14 @@ def submit_answer(session_id, question_id, choice_id, now=None):
                     raise ApiError(
                         "invalid_choice", "Geçersiz seçenek.", status.HTTP_400_BAD_REQUEST
                     )
-            is_correct, correct_id, points, is_last = _apply_answer(session, row, choice, now)
+            is_correct, correct_id, points, is_last, too_fast = _apply_answer(
+                session, row, choice, now
+            )
             payload = {
                 "is_correct": is_correct,
                 "correct_choice_id": correct_id,
                 "points": points,
+                "too_fast": too_fast,
                 "is_last": is_last,
                 "score_so_far": session.score,
             }

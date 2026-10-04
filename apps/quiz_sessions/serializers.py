@@ -15,11 +15,28 @@ class ErrorSerializer(serializers.Serializer):
     error = ErrorBodySerializer()
 
 
+class StrictIntegerField(serializers.IntegerField):
+    """Yalnızca gerçek JSON tam sayısı kabul eder ("12", 1.5 ve true reddedilir)."""
+
+    def to_internal_value(self, data):
+        if isinstance(data, bool) or not isinstance(data, int):
+            self.fail("invalid")
+        return super().to_internal_value(data)
+
+
 class StartSessionSerializer(serializers.Serializer):
     category = serializers.SlugRelatedField(
         slug_field="slug", queryset=Category.objects.filter(is_active=True)
     )
     client_type = serializers.ChoiceField(choices=QuizSession.ClientType.choices, required=False)
+    recent_question_ids = serializers.ListField(
+        child=StrictIntegerField(min_value=1, max_value=2_147_483_647),
+        required=False,
+        allow_empty=True,
+        max_length=services.MAX_RECENT_QUESTION_IDS,
+        help_text="İstemcinin bu kategoride son oynadığı soru ID'leri (eskiden yeniye, "
+        "en fazla 40). Sunucu önce bu listede olmayan sorulardan seçer.",
+    )
 
 
 class SessionCreatedSerializer(serializers.Serializer):
@@ -54,6 +71,9 @@ class AnswerResultSerializer(serializers.Serializer):
     is_correct = serializers.BooleanField()
     correct_choice_id = serializers.IntegerField()
     points = serializers.IntegerField()
+    too_fast = serializers.BooleanField(
+        help_text="Cevap 300 ms'den hızlı geldiyse true: puan verilmez."
+    )
     is_last = serializers.BooleanField()
     score_so_far = serializers.IntegerField()
 

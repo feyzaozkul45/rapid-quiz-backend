@@ -84,3 +84,83 @@ questions:
     difficulty: 2
     choices: ["Momentumun korunumu", "Enerjinin korunumu", "Arşimet ilkesi", "Pascal ilkesi"]
     answer: 2
+  - text: "Elektrik akımının SI birimi nedir?"
+    difficulty: 1
+    choices: ["Volt", "Ohm", "Watt", "Amper"]
+    answer: 4
+  - text: "Bir cismin birim hacmindeki kütlesine ne ad verilir?"
+    difficulty: 1
+    choices: ["Basınç (P)", "Yoğunluk (ρ)", "Ağırlık (G)", "İvme (a)"]
+    answer: 2
+  - text: "Ses dalgalarının yayılması için aşağıdakilerden hangisi gereklidir?"
+    difficulty: 2
+    choices: ["Maddesel ortam", "Boşluk", "Manyetik alan", "Elektrik yükü"]
+    answer: 1
+  - text: "Bir cismin birim zamandaki yer değiştirmesine ne ad verilir?"
+    difficulty: 1
+    choices: ["İvme", "Kuvvet", "İş", "Hız"]
+    answer: 4
+  - text: "Su, deniz seviyesinde yaklaşık kaç °C'de kaynar?"
+    difficulty: 1
+    choices: ["50 °C", "80 °C", "100 °C", "120 °C"]
+    answer: 3
+  - text: "Mıknatısın çevresinde etkisini gösterdiği bölgeye ne ad verilir?"
+    difficulty: 1
+    choices: ["Elektrik alanı", "Kütle çekim alanı", "Manyetik alan", "Işık alanı"]
+    answer: 3
+  - text: "Hava direnci yok sayıldığında serbest düşen cisimlerin ivmesi kütleye bağlı mıdır?"
+    difficulty: 2
+    choices: ["Hayır, tüm cisimlerde aynıdır", "Evet, ağır cisimler daha hızlı düşer", "Evet, hafif cisimler daha hızlı düşer", "Yalnızca cismin rengine bağlıdır"]
+    answer: 1
+  - text: "Bir ses dalgasının frekansı arttıkça sesin hangi özelliği değişir?"
+    difficulty: 2
+    choices: ["Şiddeti azalır", "Yayılma hızı sıfırlanır", "Kütlesi artar", "Tizliği artar"]
+    answer: 4
+  - text: "Dünya'nın Güneş etrafındaki bir tam turu yaklaşık ne kadar sürer?"
+    difficulty: 1
+    choices: ["1 gün", "1 yıl", "1 ay", "1 hafta"]
+    answer: 2
+  - text: "Işığın bir ortamdan diğerine geçerken yön değiştirmesine ne ad verilir?"
+    difficulty: 1
+    choices: ["Yansıma", "Kırılma", "Soğurma", "Saçılma"]
+    answer: 2
+  - text: "Düz aynadan yansıyan ışıkta gelme açısı ile yansıma açısı arasındaki ilişki nedir?"
+    difficulty: 2
+    choices: ["Yansıma açısı daha büyüktür", "Yansıma açısı daha küçüktür", "İkisi birbirinden bağımsızdır", "Birbirine eşittir"]
+    answer: 4
+  - text: "Elektrik devresinde akıma karşı gösterilen zorluğa ne ad verilir?"
+    difficulty: 1
+    choices: ["Direnç", "Gerilim", "Kapasite", "Endüktans"]
+    answer: 1
+  - text: "Bir atomun atom numarası, çekirdeğindeki hangi parçacığın sayısına eşittir?"
+    difficulty: 2
+    choices: ["Nötron", "Foton", "Proton", "Kuark"]
+    answer: 3
+  - text: "Aşağıdakilerden hangisinin dalga boyu en kısadır?"
+    difficulty: 2
+    choices: ["Radyo dalgaları", "Mikrodalga", "Görünür ışık", "Gama ışınları"]
+    answer: 4
+  - text: "Bir cisme etki eden net kuvvet sıfırsa cismin hareketi nasıl olur?"
+    difficulty: 2
+    choices: ["Sürekli hızlanır", "Hızı sabit kalır", "Yön değiştirir", "Giderek yavaşlar"]
+    answer: 2
+  - text: "Kinetik enerji aşağıdakilerden hangisine bağlıdır?"
+    difficulty: 2
+    choices: ["Yalnızca cismin yüksekliğine", "Yalnızca cismin sıcaklığına", "Cismin kütlesine ve hızına", "Yalnızca cismin rengine"]
+    answer: 3
+  - text: "Bir sıvının içinde basınç, derinlik arttıkça nasıl değişir?"
+    difficulty: 2
+    choices: ["Derinlikle birlikte artar", "Derinlikle birlikte azalır", "Derinlikten etkilenmez", "Yüzeyde en yüksektir"]
+    answer: 1
+  - text: "Dünya'da gelgit (met-cezir) olayının başlıca nedeni hangisidir?"
+    difficulty: 2
+    choices: ["Ayın kütle çekimi", "Güneş lekeleri", "Rüzgârların yönü", "Yağış miktarı"]
+    answer: 1
+  - text: "Bir yayın uzama miktarı ile uygulanan kuvvet arasındaki orantıyı veren yasa hangisidir?"
+    difficulty: 2
+    choices: ["Boyle yasası", "Ohm yasası", "Hooke yasası", "Pascal yasası"]
+    answer: 3
+  - text: "Sıvıya batan cisme yukarı yönde bir kaldırma kuvveti etki ettiğini söyleyen ilke hangisidir?"
+    difficulty: 2
+    choices: ["Pascal ilkesi", "Arşimet ilkesi", "Bernoulli ilkesi", "Heisenberg ilkesi"]
+    answer: 2

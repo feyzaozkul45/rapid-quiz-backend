@@ -84,3 +84,83 @@ questions:
     difficulty: 3
     choices: ["Hindistan ve Pakistan", "Butan ve Çin", "Nepal ve Çin", "Nepal ve Hindistan"]
     answer: 3
+  - text: "İspanya'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Barselona", "Sevilla", "Madrid", "Valensiya"]
+    answer: 3
+  - text: "Güney Kore'nin başkenti neresidir?"
+    difficulty: 1
+    choices: ["Seul", "Busan", "Pekin", "Tokyo"]
+    answer: 1
+  - text: "Yunanistan'ın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Atina", "Selanik", "Patras", "Volos"]
+    answer: 1
+  - text: "Amazon Nehri hangi kıtada bulunur?"
+    difficulty: 1
+    choices: ["Afrika", "Avrupa", "Güney Amerika", "Kuzey Amerika"]
+    answer: 3
+  - text: "Aşağıdakilerden hangisi bir ada ülkesidir?"
+    difficulty: 2
+    choices: ["Macaristan", "İzlanda", "Slovakya", "İsviçre"]
+    answer: 2
+  - text: "Kızıldeniz ile Akdeniz'i birbirine bağlayan yapay su yolu hangisidir?"
+    difficulty: 2
+    choices: ["Panama Kanalı", "Kiel Kanalı", "Korint Kanalı", "Süveyş Kanalı"]
+    answer: 4
+  - text: "Peru'nun başkenti neresidir?"
+    difficulty: 1
+    choices: ["Quito", "Lima", "Bogota", "La Paz"]
+    answer: 2
+  - text: "Norveç'in başkenti neresidir?"
+    difficulty: 1
+    choices: ["Oslo", "Bergen", "Stockholm", "Helsinki"]
+    answer: 1
+  - text: "Vietnam'ın başkenti neresidir?"
+    difficulty: 2
+    choices: ["Ho Chi Minh Kenti", "Bangkok", "Phnom Penh", "Hanoi"]
+    answer: 4
+  - text: "Hindistan'ın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Mumbai", "Kalküta", "Yeni Delhi", "Chennai"]
+    answer: 3
+  - text: "Meksika'nın başkenti neresidir?"
+    difficulty: 2
+    choices: ["Guadalajara", "Cancún", "Mexico City", "Monterrey"]
+    answer: 3
+  - text: "Polonya'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Varşova", "Krakov", "Gdansk", "Prag"]
+    answer: 1
+  - text: "Aşağıdaki ülkelerden hangisinin yüzölçümü en büyüktür?"
+    difficulty: 2
+    choices: ["Çin", "Kanada", "ABD", "Rusya"]
+    answer: 4
+  - text: "Cebelitarık Boğazı, Akdeniz'i hangi okyanusa bağlar?"
+    difficulty: 2
+    choices: ["Hint Okyanusu", "Atlas Okyanusu", "Pasifik Okyanusu", "Arktik Okyanusu"]
+    answer: 2
+  - text: "Danimarka'nın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Aarhus", "Kopenhag", "Odense", "Oslo"]
+    answer: 2
+  - text: "Aşağıdaki ülkelerden hangisi Asya kıtasında yer alır?"
+    difficulty: 2
+    choices: ["Peru", "Kenya", "Polonya", "Tayland"]
+    answer: 4
+  - text: "Sahra Çölü hangi kıtadadır?"
+    difficulty: 1
+    choices: ["Afrika", "Asya", "Avustralya", "Güney Amerika"]
+    answer: 1
+  - text: "Fiyortlarıyla ünlü İskandinav ülkesi hangisidir?"
+    difficulty: 2
+    choices: ["Hollanda", "Macaristan", "Norveç", "Belçika"]
+    answer: 3
+  - text: "Tayland'ın başkenti neresidir?"
+    difficulty: 1
+    choices: ["Manila", "Cakarta", "Kuala Lumpur", "Bangkok"]
+    answer: 4
+  - text: "Dünyanın en kalabalık kıtası hangisidir?"
+    difficulty: 1
+    choices: ["Afrika", "Asya", "Avrupa", "Güney Amerika"]
+    answer: 2

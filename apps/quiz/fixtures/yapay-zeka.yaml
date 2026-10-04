@@ -84,3 +84,83 @@ questions:
     difficulty: 2
     choices: ["Kayıp fonksiyonu", "Aktivasyon fonksiyonu", "Hash fonksiyonu", "Ölçekleme fonksiyonu"]
     answer: 2
+  - text: "Bir yapay sinir ağında veriyi ağa ilk alan katmana ne ad verilir?"
+    difficulty: 1
+    choices: ["Çıktı katmanı", "Havuzlama katmanı", "Girdi katmanı", "Normalleştirme katmanı"]
+    answer: 3
+  - text: "Metni, bir dil modelinin işleyebileceği küçük birimlere bölme işlemine ne ad verilir?"
+    difficulty: 2
+    choices: ["Tokenizasyon", "Normalizasyon", "Kuantizasyon", "Regülarizasyon"]
+    answer: 1
+  - text: "Kelimeleri anlam ilişkisini koruyan sayısal vektörlere dönüştüren temsile ne ad verilir?"
+    difficulty: 2
+    choices: ["Sıkıştırma (compression)", "Karma (hashing)", "Dilimleme (slicing)", "Gömme (embedding)"]
+    answer: 4
+  - text: "Çok sayıda karar ağacının tahminlerini birleştiren topluluk (ensemble) yöntemi hangisidir?"
+    difficulty: 2
+    choices: ["Destek vektör makinesi", "Rastgele orman", "Doğrusal regresyon", "K-en yakın komşu"]
+    answer: 2
+  - text: "Model eğitiminde hiç kullanılmayıp nihai başarıyı ölçmek için ayrılan veri kümesine ne ad verilir?"
+    difficulty: 1
+    choices: ["Eğitim kümesi", "Test kümesi", "Etiket kümesi", "Gürültü kümesi"]
+    answer: 2
+  - text: "Bir modelin tüm eğitim verisini bir kez baştan sona işlemesine ne ad verilir?"
+    difficulty: 1
+    choices: ["Kernel", "Bias", "Batch", "Epoch"]
+    answer: 4
+  - text: "Öğrenme oranı (learning rate) neyi belirler?"
+    difficulty: 2
+    choices: ["Güncelleme adımının büyüklüğünü", "Eğitimde kullanılan örneklerin sayısını", "Ağdaki gizli katmanların sayısını", "Modelin ayırt edeceği sınıfların sayısını"]
+    answer: 1
+  - text: "Bir görüntüdeki nesneleri hem sınıflandırıp hem de bir kutuyla konumlandıran göreve ne ad verilir?"
+    difficulty: 2
+    choices: ["Metin özetleme", "Ses ayrıştırma", "Nesne algılama", "Veri madenciliği"]
+    answer: 3
+  - text: "Büyük dil modellerinde 'halüsinasyon' ne anlama gelir?"
+    difficulty: 3
+    choices: ["Eğitim verisini kelimesi kelimesine ezberlemek", "Girdi metnini başka bir dile otomatik çevirmek", "Soruya cevap vermeyi tamamen reddetmek", "Gerçeğe dayanmayan bilgiyi inandırıcı sunmak"]
+    answer: 4
+  - text: "Takviyeli öğrenmede ajanın içinde hareket ettiği ve ödül aldığı dünyaya ne ad verilir?"
+    difficulty: 2
+    choices: ["Katman (layer)", "Ortam (environment)", "Gradyan (gradient)", "Çekirdek (kernel)"]
+    answer: 2
+  - text: "Aşağıdakilerden hangisi Transformer mimarisine dayanan bir dil modelidir?"
+    difficulty: 1
+    choices: ["Redis", "Nginx", "BERT", "MySQL"]
+    answer: 3
+  - text: "Örnekleri önceden verilmiş etiketler olmadan benzerliklerine göre gruplara ayırma işine ne ad verilir?"
+    difficulty: 2
+    choices: ["Kümeleme (clustering)", "Regresyon (regression)", "Sınıflandırma (classification)", "Özetleme (summarization)"]
+    answer: 1
+  - text: "Bir modelin tahmini ile gerçek değer arasındaki farkı sayısallaştıran fonksiyona ne ad verilir?"
+    difficulty: 2
+    choices: ["Kayıp (loss) fonksiyonu", "Karma (hash) fonksiyonu", "Ölçekleme fonksiyonu", "Sıralama fonksiyonu"]
+    answer: 1
+  - text: "Gradyan inişi (gradient descent) algoritması neyi amaçlar?"
+    difficulty: 3
+    choices: ["Eğitim veri kümesini otomatik olarak büyütmeyi", "Ağdaki katman sayısını sürekli artırmayı", "Kayıp fonksiyonunun değerini en aza indirmeyi", "Çıktıları etiketlerden bağımsız hâle getirmeyi"]
+    answer: 3
+  - text: "Fotoğraftaki yüzleri tanıma ve doğrulama gibi görevler yapay zekânın hangi alt alanına girer?"
+    difficulty: 1
+    choices: ["Doğal dil işleme", "Bilgisayarlı görü", "Robotik kinematik", "Veri depolama"]
+    answer: 2
+  - text: "Alan Turing 1950 tarihli makalesinde hangi soruyu ele alır?"
+    difficulty: 2
+    choices: ["Bilgisayarlar uyuyabilir mi?", "Yazılım sonsuza dek çalışır mı?", "Zekâ ölçülebilir mi?", "Makineler düşünebilir mi?"]
+    answer: 4
+  - text: "Makine öğrenmesinde 'özellik' (feature) neyi ifade eder?"
+    difficulty: 2
+    choices: ["Modelin eğitim süresini gösteren sayaç", "Örneği tanımlayan ölçülebilir nitelik", "Katmanlar arasındaki bağlantı sayısı", "Eğitim sonunda üretilen hata raporu"]
+    answer: 2
+  - text: "Aşağıdakilerden hangisi denetimli öğrenme görevine örnektir?"
+    difficulty: 1
+    choices: ["Spam e-postaları ayırt etmeyi öğrenmek", "Müşterileri etiketsiz biçimde gruplamak", "Bir robotu ödül sistemiyle yürütmek", "Etiketsiz görsellerden yeni görsel üretmek"]
+    answer: 1
+  - text: "Bir modelin eğitimde görmediği yeni verilerde de iyi sonuç vermesine ne ad verilir?"
+    difficulty: 3
+    choices: ["Ezberleme (memorization)", "Sönümleme (damping effect)", "Ölçekleme (feature scaling)", "Genelleme (generalization)"]
+    answer: 4
+  - text: "RLHF kısaltmasındaki 'HF' neyi ifade eder?"
+    difficulty: 2
+    choices: ["High Frequency", "Hidden Features", "Human Feedback", "Hard Fork"]
+    answer: 3

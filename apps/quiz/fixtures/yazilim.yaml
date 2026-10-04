@@ -84,3 +84,83 @@ questions:
     difficulty: 2
     choices: ["Server", "Secure", "Standard", "Simple"]
     answer: 2
+  - text: "Python'da bir metni ekrana yazdırmak için hangi fonksiyon kullanılır?"
+    difficulty: 1
+    choices: ["echo()", "write()", "print()", "show()"]
+    answer: 3
+  - text: "JavaScript'te değeri sonradan değiştirilemeyen bir değişken tanımlamak için hangi anahtar kelime kullanılır?"
+    difficulty: 1
+    choices: ["const", "var", "let", "static"]
+    answer: 1
+  - text: "HTTP 200 durum kodu ne anlama gelir?"
+    difficulty: 1
+    choices: ["Kaynak bulunamadı", "Sunucu hatası", "Yetkisiz erişim", "İstek başarılı"]
+    answer: 4
+  - text: "Bir koleksiyondaki elemanları sırayla gezmek için yaygın kullanılan döngü yapısı hangisidir?"
+    difficulty: 1
+    choices: ["if", "for", "try", "class"]
+    answer: 2
+  - text: "Git'te bir dalı mevcut dalla birleştiren komut hangisidir?"
+    difficulty: 1
+    choices: ["git add", "git merge", "git init", "git log"]
+    answer: 2
+  - text: "Yazılımda hata ayıklama (debugging) ne demektir?"
+    difficulty: 1
+    choices: ["Kodu başka dile çevirmek", "Programı hızlandırmak için sıkıştırmak", "Kullanıcı arayüzünü renklendirmek", "Hataların nedenini bulup düzeltmek"]
+    answer: 4
+  - text: "API anahtarı gibi gizli bilgilerin kaynak koduna yazılması neden sakıncalıdır?"
+    difficulty: 2
+    choices: ["Depo paylaşıldığında gizli bilgi sızabilir", "Program çalışırken belirgin biçimde yavaşlar", "Derleyici bu satırı hiçbir zaman kabul etmez", "Dosya boyutu sınırsız büyüdüğü için"]
+    answer: 1
+  - text: "CLI kısaltması neyin açılımıdır?"
+    difficulty: 1
+    choices: ["Code Line Index", "Compact Logic Interface", "Command Line Interface", "Central Library Integration"]
+    answer: 3
+  - text: "Bir web sayfasının içeriğini ve yapısını tanımlayan işaretleme dili hangisidir?"
+    difficulty: 1
+    choices: ["CSS", "SQL", "JSON", "HTML"]
+    answer: 4
+  - text: "Veritabanında iki tabloyu ortak bir alan üzerinden birleştiren SQL işlemine ne ad verilir?"
+    difficulty: 2
+    choices: ["UNION", "JOIN", "GROUP BY", "LIMIT"]
+    answer: 2
+  - text: "Bir fonksiyona dışarıdan verilen değerlere ne ad verilir?"
+    difficulty: 1
+    choices: ["Dönüş değerleri (returns)", "Sabitler (constants)", "Parametreler (arguments)", "İstisnalar (exceptions)"]
+    answer: 3
+  - text: "Aşağıdakilerden hangisi belge tabanlı bir NoSQL veritabanıdır?"
+    difficulty: 2
+    choices: ["MongoDB", "PostgreSQL", "MariaDB", "SQLite"]
+    answer: 1
+  - text: "Kullanıcıdan gelen veriyi doğrulamadan SQL sorgusuna eklemek hangi güvenlik açığına yol açar?"
+    difficulty: 3
+    choices: ["SQL enjeksiyonu", "Önbellek zehirlenmesi", "Disk parçalanması", "Bellek sızıntısı"]
+    answer: 1
+  - text: "Aynı kodu birçok yerde yazmak yerine tek bir yerde tanımlayıp çağırmak neyin örneğidir?"
+    difficulty: 2
+    choices: ["Sürüm çakışması (conflict)", "Hata ayıklama (debugging)", "Kod yeniden kullanımı (reuse)", "Önbellekleme (caching)"]
+    answer: 3
+  - text: "Birden çok modülün birlikte doğru çalışıp çalışmadığını sınayan teste ne ad verilir?"
+    difficulty: 2
+    choices: ["Birim testi", "Entegrasyon testi", "Duman testi", "Yük testi"]
+    answer: 2
+  - text: "Her değişiklikte kodu otomatik olarak derleyip test eden uygulama pratiğine ne ad verilir?"
+    difficulty: 2
+    choices: ["Veri göçü (migration)", "Kod gizleme (obfuscation)", "Elle dağıtım (manual deploy)", "Sürekli entegrasyon (CI)"]
+    answer: 4
+  - text: "Çalışma sırasında oluşan hata durumunu yakalayıp yönetmek için hangi yapı kullanılır?"
+    difficulty: 2
+    choices: ["for / while", "try / catch", "import / export", "if / else"]
+    answer: 2
+  - text: "Bir algoritmanın verimliliği genellikle hangi iki kaynak üzerinden değerlendirilir?"
+    difficulty: 1
+    choices: ["Zaman ve bellek", "Renk ve boyut", "Ses ve görüntü", "Ağırlık ve yoğunluk"]
+    answer: 1
+  - text: "Parolaların veritabanında nasıl saklanması önerilir?"
+    difficulty: 3
+    choices: ["Base64 ile kodlanmış biçimde saklanarak", "Düz metin olarak ama ayrı sütunda tutarak", "Her kullanıcı için aynı anahtarla şifreleyerek", "Tuzlanmış (salt) ve yavaş bir hash ile"]
+    answer: 4
+  - text: "Kod incelemesi (code review) en çok neye katkı sağlar?"
+    difficulty: 2
+    choices: ["Derleme süresini kısaltmaya", "Sunucu maliyetini sıfırlamaya", "Hataları erken yakalamaya", "İnternet hızını artırmaya"]
+    answer: 3

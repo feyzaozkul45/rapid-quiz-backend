@@ -33,7 +33,11 @@ class QuizSessionCreateView(APIView):
         )
         if client_type not in {"web", "ios", "android"}:
             client_type = "web"
-        session = workflow.start_session(body.validated_data["category"], client_type)
+        session = workflow.start_session(
+            body.validated_data["category"],
+            client_type,
+            body.validated_data.get("recent_question_ids", ()),
+        )
         data = {
             "session_id": session.id,
             "category": session.category.slug,

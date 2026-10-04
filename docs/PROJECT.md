@@ -36,9 +36,9 @@ Rapid Quiz; kullanıcının bir kategori seçip 20 soruyu, her biri için yalnı
 | FR-09 | İsim girişi | Sonuç ekranında kullanıcıdan isim istenir; isim kaydedilince skor tabloya girer. Kurallar: Unicode harf (Türkçe dahil), rakam, boşluk ve tire; baştaki/sondaki boşluklar kırpılır, art arda boşluklar teke iner; 2–20 karakter; küfür filtresi v1'de yok. İsim bir kez kaydedilir (ikinci deneme 409) ve yalnızca `completed` oturuma, quiz bitiminden sonraki 30 dakika içinde kaydedilebilir (süre geçerse 410 `name_window_closed`). |
 | FR-10 | Skor tablosu | İsim girildikten sonra seçilen kategorinin top 10 skor tablosu gösterilir; kullanıcının kendi skoru vurgulanır. Yalnızca `status=completed` ve `player_name` dolu oturumlar listelenir. |
 | FR-11 | Tekrar oyna | Sonuç ekranından aynı kategoriyi tekrar başlatma veya ana ekrana dönme seçeneği bulunur. |
-| FR-12 | Soru yönetimi | Sorular Django Admin üzerinden eklenir/düzenlenir (admin, soru başına tam 4 seçenek ve tam 1 doğru cevabı zorunlu kılar). İlk veri seti, kategori başına bir YAML dosyasından `python manage.py seed_questions` komutuyla yüklenir; komut idempotenttir ve her soruda 4 seçenek + 1 doğru cevap, kategori başına en az 20 soru olduğunu doğrular. |
+| FR-12 | Soru yönetimi | Sorular Django Admin üzerinden eklenir/düzenlenir (admin, soru başına tam 4 seçenek ve tam 1 doğru cevabı zorunlu kılar). İlk veri seti, kategori başına bir YAML dosyasından `python manage.py seed_questions` komutuyla yüklenir; komut idempotenttir ve her soruda 4 seçenek + 1 doğru cevap, kategori başına en az 20 soru olduğunu doğrular (v1 veri seti kategori başına 40 soru içerir; doğru şık konumları dengelidir). |
 
-Kategori başına havuzda 20'den fazla soru tutulursa her quiz'de rastgele 20 soru seçilir; havuz tam 20 ise sadece sıra karıştırılır.
+Kategori başına havuzda 20'den fazla soru tutulur (v1: kategori başına 40). Her quiz'de rastgele 20 soru seçilir; istemci son oynadığı soru ID'lerini gönderirse sunucu önce bunların dışından seçer, yetmezse kalan yeri en eski oynananlardan tamamlar (böylece art arda oynayan biri aynı soruları görmez ve cevapları ezberleyemez). Seçeneklerin sırası oturum başına karıştırılır.
 
 ## 3. Fonksiyonel Olmayan Gereksinimler
 
@@ -144,11 +144,11 @@ Tüm uç noktalar `/api/v1/` altında, JSON tabanlı ve kimlik doğrulamasızdı
 | GET | `/api/v1/leaderboard/?category=yapay-zeka&limit=10` | Kategori top 10 listesi |
 | GET | `/api/v1/health/` | Sağlık kontrolü |
 
-**Quiz başlatma** (`client_type` isteğe bağlıdır: yoksa `X-Client-Type` başlığı, o da yoksa `web`; geçersiz kategori 400 `validation_error`, 20'den az aktif soru 409 `category_unavailable`)
+**Quiz başlatma** (`client_type` isteğe bağlıdır: yoksa `X-Client-Type` başlığı, o da yoksa `web`; `recent_question_ids` isteğe bağlıdır: istemcinin bu kategoride son oynadığı soru ID'leri, eskiden yeniye sıralı, en fazla 40 adet, yalnızca pozitif JSON tam sayıları; geçersiz kategori veya geçersiz liste 400 `validation_error`, 20'den az aktif soru 409 `category_unavailable`)
 
 ```json
 POST /api/v1/quiz-sessions/
-{ "category": "yapay-zeka", "client_type": "web" }
+{ "category": "yapay-zeka", "client_type": "web", "recent_question_ids": [101, 102, 103] }
 
 201 Created
 { "session_id": "8f1c…", "category": "yapay-zeka", "total_questions": 20, "time_limit_seconds": 5 }
@@ -175,7 +175,7 @@ POST /api/v1/quiz-sessions/8f1c…/answers/
 { "question_id": 142, "choice_id": 562 }
 
 200 OK
-{ "is_correct": true, "correct_choice_id": 562, "points": 100,
+{ "is_correct": true, "correct_choice_id": 562, "points": 100, "too_fast": false,
   "is_last": false, "score_so_far": 300 }
 ```
 
@@ -249,6 +249,8 @@ Bir cevabın puan alması için hem doğru olması hem de süre içinde gelmesi 
 6. Skor tablosunda eşitlik, bitiş zamanıyla bozulur (bu puana daha önce ulaşan üstte yer alır; o da eşitse `id`).
 7. İsim yalnızca `completed` oturuma, bitişten sonraki 30 dakika içinde ve bir kez kaydedilir. Süre geçerse 410 `name_window_closed`, ikinci deneme 409 `name_already_set`.
 8. Aynı oturuma eş zamanlı gelen istekler `select_for_update` ile sıraya konur: aynı soruya gelen iki cevaptan yalnızca biri sayılır, diğeri 409 `question_mismatch` alır.
+9. Soru gönderildikten sonra **300 ms dolmadan** gelen seçenekli cevap puansızdır (`too_fast: true`, `is_correct: false`, `points: 0`); soru yine kapanır. Bu, insan tepkisinin mümkün kılmadığı otomasyonu zorlaştırır. Süre dolduğu için gönderilen `choice_id: null` cevabı etkilenmez.
+10. Seçeneklerin sırası oturum ve soruya özgü karıştırılır (aynı oturumda aynı soru tekrar istenirse sıra değişmez); doğru şıkkın konumu sabit değildir.
 
 **İstemci tarafı:** Geri sayım yalnızca görseldir. Süre dolunca istemci `choice_id: null` gönderir ve sonraki soruyu ister. Cevap butonları ilk tıklamada kilitlenir; sayfa yenilenirse aynı soru kalan süresiyle geri gelir.
 
@@ -275,7 +277,7 @@ rapid-quiz-backend/
 │   └── wsgi.py
 ├── apps/
 │   ├── quiz/              # Category, Question, Choice modelleri + admin + kategori listesi
-│   │   ├── fixtures/      # kategori başına bir YAML (5 kategori, 101 soru)
+│   │   ├── fixtures/      # kategori başına bir YAML (5 kategori, kategori başına 40 soru)
 │   │   ├── management/commands/seed_questions.py
 │   │   └── seeding.py     # doğrulama + idempotent yükleme
 │   ├── quiz_sessions/     # QuizSession, SessionAnswer (django.contrib.sessions ile çakışmasın diye bu ad)

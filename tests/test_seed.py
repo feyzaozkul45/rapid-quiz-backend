@@ -123,3 +123,23 @@ def test_difficulty_constraint():
     category = Category.objects.create(name="C", slug="c")
     with pytest.raises(IntegrityError), transaction.atomic():
         Question.objects.create(category=category, text="Q", difficulty=7)
+
+
+def test_bundled_pool_is_large_and_answers_are_not_guessable():
+    """Havuz tekrarı azaltacak kadar büyük; doğru şık konumu ve uzunluğu ipucu vermiyor."""
+    for name, data in seeding.load_files(FIXTURE_DIR):
+        questions = data["questions"]
+        assert len(questions) >= 40, name
+        positions = [q["answer"] for q in questions]
+        for position in (1, 2, 3, 4):
+            share = positions.count(position) / len(questions)
+            assert 0.15 <= share <= 0.35, (name, position, share)
+        longest = sum(
+            1
+            for q in questions
+            if (lengths := [len(c) for c in q["choices"]])
+            and lengths[q["answer"] - 1] == max(lengths)
+            and lengths.count(max(lengths)) == 1
+        )
+        # Rastgele beklenti %25; belirgin biçimde fazlası "en uzun şık doğrudur" ipucu olur.
+        assert longest / len(questions) <= 0.40, (name, longest)
