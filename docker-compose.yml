@@ -5,7 +5,8 @@ services:
       POSTGRES_DB: rapidquiz
       POSTGRES_USER: rapidquiz
       POSTGRES_PASSWORD: rapidquiz
-    ports: ["5432:5432"]
+    # Yalnızca bu makineden erişilir (zayıf geliştirme parolası ağa açılmasın)
+    ports: ["127.0.0.1:5432:5432"]
     volumes:
       - pgdata:/var/lib/postgresql   # postgres:18 imajında veri yolu bu üst dizindir
   api:
@@ -14,7 +15,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       DATABASE_URL: postgres://rapidquiz:rapidquiz@db:5432/rapidquiz
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     volumes: [".:/app"]
     depends_on: [db]
 volumes:

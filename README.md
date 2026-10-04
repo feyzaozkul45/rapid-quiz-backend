@@ -32,7 +32,7 @@ Test: `.venv/Scripts/python -m pytest` — Lint: `ruff check . && ruff format .`
 1. Neon'da proje oluştur (bölge Frankfurt, PostgreSQL 18). Bağlantı penceresinde **"Pooled connection" kapalıyken** görünen adresi kopyala (`ep-…` ana bilgisayar adında `-pooler` yok).
 2. Render'da **New → Blueprint** ile `rapid-quiz-backend` reposunu seç; `render.yaml` okunur. İstenen değerleri panelden gir:
    - `DATABASE_URL`: Neon adresi
-   - `DJANGO_SECRET_KEY`: rastgele 50+ karakter (`python -c "import secrets; print(secrets.token_urlsafe(64))"`)
+   - `DJANGO_SECRET_KEY`: rastgele 50+ karakter; daha kısa ya da `change-me`/`insecure` gibi örnek değerlerde uygulama başlamaz (`python -c "import secrets; print(secrets.token_urlsafe(64))"`)
    - `ADMIN_URL`: Django Admin'in adresi; `admin/` tahmin edilebilir olduğundan rastgele bir değer verin (ör. `python -c "import secrets; print(secrets.token_urlsafe(12))"` çıktısı + `/`). Verilmezse `admin/` kullanılır
    - `CORS_ALLOWED_ORIGINS`: frontend'in tam origin'i (`https://….ondigitalocean.app`, sonunda `/` olmadan)
 3. İlk deploy bitince `https://<servis>.onrender.com/api/v1/health/` adresinin `{"status": "ok", "database": "up"}` döndüğünü doğrula.

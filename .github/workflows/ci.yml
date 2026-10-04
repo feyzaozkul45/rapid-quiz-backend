@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+# İşler yalnızca depoyu okur; GITHUB_TOKEN'ın gereksiz yazma yetkisi olmasın.
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -83,7 +87,7 @@ jobs:
     env:
       # Konteyner host ağını kullanır, böylece servis konteynerine localhost:5432 ile erişir.
       CONTAINER_ENV: >-
-        -e DJANGO_SECRET_KEY=ci-only-secret
+        -e DJANGO_SECRET_KEY=ci-only-secret-key-for-docker-smoke-test-0123456789-abcdef
         -e DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
         -e DATABASE_URL=postgres://rapidquiz:rapidquiz@localhost:5432/rapidquiz
         -e PORT=8080

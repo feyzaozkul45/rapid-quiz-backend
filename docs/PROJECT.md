@@ -410,8 +410,10 @@ RUN useradd --create-home appuser
 COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 COPY . .
-# collectstatic DB'ye bağlanmaz; build için geçici secret yeterli
-RUN DJANGO_SECRET_KEY=build-only python manage.py collectstatic --noinput
+# collectstatic DB'ye bağlanmaz; build için geçici secret yeterli (prod ayarları anahtar gücünü
+# denetler: en az 50 karakter). Bu değer imaja ENV olarak girmez, yalnızca bu komuta verilir.
+RUN DJANGO_SECRET_KEY=build-time-only-key-never-used-at-runtime-0123456789abcdef0123456789 \
+    python manage.py collectstatic --noinput
 USER appuser
 EXPOSE 8080
 CMD gunicorn config.wsgi:application --bind 0.0.0.0:${PORT} --workers 3 --timeout 30 --access-logfile -
@@ -464,9 +466,9 @@ services:
       - key: CORS_ALLOWED_ORIGINS  # frontend'in tam origin'i; panelden girilir
         sync: false
       - key: DJANGO_ALLOWED_HOSTS
-        value: .onrender.com,localhost,127.0.0.1
+        value: rapid-quiz-api-pqpc.onrender.com
       - key: CSRF_TRUSTED_ORIGINS
-        value: https://*.onrender.com
+        value: https://rapid-quiz-api-pqpc.onrender.com
       - key: NUM_PROXIES
         value: "2"
       - key: WEB_CONCURRENCY
@@ -505,12 +507,12 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 | Değişken | Repo | Production değeri | Not |
 | --- | --- | --- | --- |
 | `DATABASE_URL` | backend | Neon doğrudan bağlantı adresi | `sslmode=require` içerir; Render panelinde girilir (`sync: false`), repoya girmez |
-| `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | Render panelinde girilir, repoya girmez |
+| `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | Render panelinde girilir, repoya girmez. Prod ayarları 50 karakterden kısa, 5'ten az farklı karakter içeren veya `insecure`/`change-me`/`changeme` geçen anahtarda uygulamayı başlatmaz (`config/secret_key.py`). Üretmek için: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
 | `ADMIN_URL` | backend | Tahmin edilmesi zor bir yol (ör. `gizli-yol-9f3a/`) | Django Admin adresi; varsayılan `admin/`. Yalnızca harf, rakam, `_`, `-`, `/`; panelden girilir (`sync: false`) |
 | `DJANGO_SETTINGS_MODULE` | backend | `config.settings.prod` | Dockerfile'da tanımlı |
-| `DJANGO_ALLOWED_HOSTS` | backend | `.onrender.com,localhost,127.0.0.1` | `render.yaml`'da tanımlı; özel alan adı eklenirse buraya da eklenir |
+| `DJANGO_ALLOWED_HOSTS` | backend | `rapid-quiz-api-pqpc.onrender.com` | `render.yaml`'da tanımlı, yalnızca bu servisin adresi (Render health check de bu `Host` ile gelir); özel alan adı eklenirse buraya da eklenir |
 | `CORS_ALLOWED_ORIGINS` | backend | Frontend'in tam origin'i | Panelden girilir; sonunda `/` olmaz; mobil uygulama için gerekmez |
-| `CSRF_TRUSTED_ORIGINS` | backend | `https://*.onrender.com` | Django Admin girişi için |
+| `CSRF_TRUSTED_ORIGINS` | backend | `https://rapid-quiz-api-pqpc.onrender.com` | Django Admin girişi için; joker (`*.onrender.com`) kullanılmaz, yalnızca kendi origin'i güvenilir |
 | `NUM_PROXIES` | backend | `2` (`render.yaml`) | Gerçek istemci IP'si için `X-Forwarded-For` zincirindeki güvenilir hop sayısı; **tahmindir, dağıtımdan sonra backend `README.md`'deki yöntemle doğrulanır** |
 | `WEB_CONCURRENCY` | backend | `2` | gunicorn worker sayısı (512 MB RAM) |
 | `PORT` | backend | Render verir (`10000`) | `scripts/start.sh` okur |
@@ -519,7 +521,7 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 
 ### Production Ayarları Kontrol Listesi (`config/settings/prod.py`)
 
-- [ ] `DEBUG = False`, `SECRET_KEY` ve `ALLOWED_HOSTS` ortam değişkeninden okunur
+- [ ] `DEBUG = False`, `SECRET_KEY` ve `ALLOWED_HOSTS` ortam değişkeninden okunur; `SECRET_KEY` zayıfsa (kısa, örnek değer) uygulama başlamaz
 - [ ] Django Admin varsayılan `admin/` yolunda bırakılmaz: `ADMIN_URL` ortam değişkeniyle tahmin edilmesi zor bir yol verilir (parola denemelerine karşı ek savunma; admin girişinin ayrıca hız sınırı yoktur, bu yüzden uzun ve benzersiz bir süperkullanıcı parolası şarttır)
 - [ ] `SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")` (Render TLS'i yük dengeleyicide sonlandırır)
 - [ ] `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE` ve HSTS açık
@@ -554,7 +556,7 @@ services:
       POSTGRES_DB: rapidquiz
       POSTGRES_USER: rapidquiz
       POSTGRES_PASSWORD: rapidquiz
-    ports: ["5432:5432"]
+    ports: ["127.0.0.1:5432:5432"]   # yalnızca bu makineden erişilir
     volumes:
       - pgdata:/var/lib/postgresql   # postgres:18 imajında veri yolu bu üst dizindir
   api:
@@ -563,7 +565,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       DATABASE_URL: postgres://rapidquiz:rapidquiz@db:5432/rapidquiz
-    ports: ["8000:8000"]
+    ports: ["127.0.0.1:8000:8000"]
     volumes: [".:/app"]
     depends_on: [db]
 volumes:
