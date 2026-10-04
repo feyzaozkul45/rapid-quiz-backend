@@ -5,9 +5,11 @@ Yerelde SQLite ile koşarken atlanır; CI'da REQUIRE_POSTGRES=1 olduğu için at
 
 import os
 import threading
+from datetime import timedelta
 
 import pytest
 from django.db import IntegrityError, connection, connections, transaction
+from django.utils import timezone
 
 from apps.leaderboard.queries import ranked_sessions
 from apps.quiz.models import Choice
@@ -106,6 +108,11 @@ def test_concurrent_answers_to_same_question_only_one_counts():
     session = workflow.start_session(category, "web")
     question_id = workflow.get_current_question(session.id)["question_id"]
     correct = Choice.objects.get(question_id=question_id, is_correct=True).pk
+    # Soru 1 sn önce gönderilmiş gibi yap: 300 ms'den hızlı cevaplar puansızdır (too_fast) ve bu
+    # test eş zamanlılığı ölçer, hız kuralını değil.
+    SessionAnswer.objects.filter(session=session, position=0).update(
+        served_at=timezone.now() - timedelta(seconds=1)
+    )
 
     results = _run_concurrently(
         [lambda: workflow.submit_answer(session.id, question_id, correct) for _ in range(5)]
