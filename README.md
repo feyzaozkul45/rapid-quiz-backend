@@ -1,6 +1,31 @@
 # rapid-quiz-backend
 
-Rapid Quiz için Django REST API. Gereksinimler: [docs/PROJECT.md](docs/PROJECT.md).
+**Rapid Quiz**, bir kategori seçip 20 soruyu her biri için yalnızca 5 saniyede cevapladığınız, sonunda adınızı yazıp skor tablosunda yerinizi gördüğünüz bir bilgi yarışmasıdır. Bu depo uygulamanın Django REST API'sidir; web arayüzü [rapid-quiz-frontend](https://github.com/feyzaozkul45/rapid-quiz-frontend) reposundadır.
+
+**Canlı adres:** <https://king-prawn-app-ou5mt.ondigitalocean.app>
+
+Gereksinimler ve ayrıntılı tasarım: [docs/PROJECT.md](docs/PROJECT.md).
+
+## Teknolojiler ve özellikler
+
+| Katman | Teknoloji |
+| --- | --- |
+| Frontend | Vue 3 (Composition API) · TypeScript · Vite · Pinia · Vue Router · Axios · Tailwind CSS 4 · vue-i18n (`tr`) |
+| Backend | Python · Django 6 · Django REST Framework · drf-spectacular (OpenAPI, `/api/docs/`) · gunicorn · WhiteNoise · Docker |
+| Veritabanı | PostgreSQL 18 (Neon); yerelde `DATABASE_URL` yoksa SQLite |
+| Test / kalite | pytest · Vitest · Playwright · ruff · ESLint · Prettier |
+| Altyapı | DigitalOcean (statik site) · Render (API) · Neon (veritabanı) · GitHub Actions |
+
+**Özellikler**
+
+- **5 kategori** (Yapay Zeka, Bilgisayar Mühendisliği, Ülkeler, Fizik, Yazılım): her birinde 40 soruluk havuz, her quiz 20 soru; 4 seçenekli, tek doğru cevaplı, her soru ayrı ekranda.
+- **5 saniye süre:** geri sayım görseldir, süre kontrolü sunucudadır (1 sn ağ toleransı). Cevaptan sonra ~1 sn doğru/yanlış gösterilir; geri dönüş ve cevap değiştirme yoktur.
+- **Hile önleme:** doğru cevap soru yanıtlarında yoktur; puan ve süre yalnızca sunucuda hesaplanır; seçenek sırası oturum başına karışır; 300 ms'den hızlı cevap puansızdır; IP ve oturum bazlı hız sınırları vardır.
+- **Tekrar önleme:** tarayıcı her kategoride son oynanan 40 soruyu saklar ve quiz başlatırken sunucuya gönderir; sunucu önce bunların dışından soru seçer.
+- **Skor tablosu:** quiz sonunda isim (2–20 karakter, Türkçe dahil Unicode) bir kez kaydedilir; kategori başına ilk 10 gösterilir, kullanıcının satırı vurgulanır.
+- **Mobil uyum:** 360 px'e kadar kullanılabilir arayüz; durumsuz JSON API sayesinde mobil uygulamaya hazır.
+- **Ücretsiz altyapıya uyum:** uyuyan sunucu için "Sunucu uyanıyor" mesajı ve uzun ilk zaman aşımı; eski oturumların otomatik temizliği.
+- **CI/CD:** GitHub Actions her push ve PR'da çalışır. Backend: ruff, migration kontrolü, PostgreSQL 18'e karşı pytest (Python 3.13/3.14), Docker imajı derleme ve duman testi. Frontend: lint, Vitest, build ve Playwright uçtan uca testi. Render, backend'i yalnızca CI başarılı olunca yayına alır (Auto-Deploy: *After CI Checks Pass*); DigitalOcean statik sitesi `main`'e her push'ta yayına çıkar.
 
 ## Yerel geliştirme
 

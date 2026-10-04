@@ -2,6 +2,8 @@
 
 Oct 1, 2026 · @feyza nur
 
+**Canlı adres:** <https://king-prawn-app-ou5mt.ondigitalocean.app> · API: <https://rapid-quiz-api-pqpc.onrender.com/api/v1/health/>
+
 ## 1. Genel Bakış
 
 Rapid Quiz; kullanıcının bir kategori seçip 20 soruyu, her biri için yalnızca 5 saniye süresi olacak şekilde tek tek cevapladığı bir bilgi yarışması uygulamasıdır. Quiz bitince puan hesaplanır, kullanıcı adını girer ve skor tablosunda ilk 10 gösterilir.
@@ -9,7 +11,7 @@ Rapid Quiz; kullanıcının bir kategori seçip 20 soruyu, her biri için yalnı
 **Kapsam (v1):**
 
 - 5 kategori: Yapay Zeka, Bilgisayar Mühendisliği, Ülkeler, Fizik, Yazılım
-- Kategori başına 20 soru, her biri ayrı ekranda, soru başına 5 saniye
+- Kategori başına 40 soruluk havuz; her quiz'de 20 soru, her biri ayrı ekranda, soru başına 5 saniye
 - Quiz sonunda puan hesaplama, isim girişi ve top 10 skor tablosu
 - Django REST API (backend) ve Vue.js web istemcisi (frontend), ayrı repolarda
 - PostgreSQL veritabanı; ücretsiz kurulum: Render (API) + Neon (veritabanı) + DigitalOcean (statik site)
@@ -20,6 +22,27 @@ Rapid Quiz; kullanıcının bir kategori seçip 20 soruyu, her biri için yalnı
 - Kayıt olma, giriş yapma, kullanıcı hesabı ve profil
 - Sosyal giriş, çoklu oyuncu, bildirimler
 - Mobil uygulamanın kendisi (bu doküman yalnızca API'nin mobil uyumluluğunu kapsar)
+
+### Teknolojiler ve özellikler (özet)
+
+| Katman | Teknoloji |
+| --- | --- |
+| Frontend | Vue 3 (Composition API) · TypeScript · Vite · Pinia · Vue Router · Axios · Tailwind CSS 4 · vue-i18n (`tr`) |
+| Backend | Python · Django 6 · Django REST Framework · drf-spectacular (OpenAPI, `/api/docs/`) · gunicorn · WhiteNoise · Docker |
+| Veritabanı | PostgreSQL 18 (Neon); yerelde `DATABASE_URL` yoksa SQLite |
+| Test / kalite | pytest · Vitest · Playwright · ruff · ESLint · Prettier |
+| Altyapı | DigitalOcean (statik site) · Render (API) · Neon (veritabanı) · GitHub Actions |
+
+**Özellikler**
+
+- **5 kategori** (Yapay Zeka, Bilgisayar Mühendisliği, Ülkeler, Fizik, Yazılım): her birinde 40 soruluk havuz, her quiz 20 soru; 4 seçenekli, tek doğru cevaplı, her soru ayrı ekranda.
+- **5 saniye süre:** geri sayım görseldir, süre kontrolü sunucudadır (1 sn ağ toleransı). Cevaptan sonra ~1 sn doğru/yanlış gösterilir; geri dönüş ve cevap değiştirme yoktur.
+- **Hile önleme:** doğru cevap soru yanıtlarında yoktur; puan ve süre yalnızca sunucuda hesaplanır; seçenek sırası oturum başına karışır; 300 ms'den hızlı cevap puansızdır; IP ve oturum bazlı hız sınırları vardır.
+- **Tekrar önleme:** tarayıcı her kategoride son oynanan 40 soruyu saklar ve quiz başlatırken sunucuya gönderir; sunucu önce bunların dışından soru seçer.
+- **Skor tablosu:** quiz sonunda isim (2–20 karakter, Türkçe dahil Unicode) bir kez kaydedilir; kategori başına ilk 10 gösterilir, kullanıcının satırı vurgulanır.
+- **Mobil uyum:** 360 px'e kadar kullanılabilir arayüz; durumsuz JSON API sayesinde mobil uygulamaya hazır.
+- **Ücretsiz altyapıya uyum:** uyuyan sunucu için "Sunucu uyanıyor" mesajı ve uzun ilk zaman aşımı; eski oturumların otomatik temizliği.
+- **CI/CD:** GitHub Actions her push ve PR'da çalışır. Backend: ruff, migration kontrolü, PostgreSQL 18'e karşı pytest (Python 3.13/3.14), Docker imajı derleme ve duman testi. Frontend: lint, Vitest, build ve Playwright uçtan uca testi. Render, backend'i yalnızca CI başarılı olunca yayına alır (Auto-Deploy: *After CI Checks Pass*); DigitalOcean statik sitesi `main`'e her push'ta yayına çıkar.
 
 ## 2. Fonksiyonel Gereksinimler
 
@@ -374,9 +397,20 @@ Mobil uygulama backend'de hiçbir değişiklik gerektirmeden aynı `/api/v1/` u�
 | --- | --- | --- | --- |
 | `rapid-quiz-api` | Render ücretsiz web servisi (Docker, Frankfurt) | `rapid-quiz-backend` reposu, `main` dalı, `render.yaml` | 15 dk hareketsizlikte uyur; uyanması 30–60 sn sürer |
 | `rapid-quiz-db` | Neon ücretsiz PostgreSQL 18 (Frankfurt) | Neon | Pooler'sız **doğrudan** bağlantı, `sslmode=require` |
-| `rapid-quiz-web` | DigitalOcean App Platform statik site | `rapid-quiz-frontend` reposu, `main` dalı | Ücretsiz |
+| `rapid-quiz-web` | DigitalOcean App Platform statik site | `rapid-quiz-frontend` reposu, `main` dalı | Ücretsiz; canlı adres `https://king-prawn-app-ou5mt.ondigitalocean.app` |
 
 Tüm bileşenler Avrupa'dadır (Frankfurt). Frontend ve API farklı alan adlarında olduğu için backend'de CORS ayarı zorunludur.
+
+**Canlı adresler**
+
+| Ne | Adres |
+| --- | --- |
+| Uygulama (frontend) | <https://king-prawn-app-ou5mt.ondigitalocean.app> |
+| API | <https://rapid-quiz-api-pqpc.onrender.com/api/v1/> (sağlık: `/api/v1/health/`, OpenAPI: `/api/docs/`) |
+| Django Admin | `https://rapid-quiz-api-pqpc.onrender.com/<ADMIN_URL>` (`ADMIN_URL` Render panelinde tanımlıdır, repoya yazılmaz) |
+| Veritabanı | Neon (Frankfurt); yalnızca `DATABASE_URL` ile erişilir, herkese açık adres yoktur |
+
+**Render ayarları (panel):** `DATABASE_URL`, `DJANGO_SECRET_KEY`, `ADMIN_URL` ve `CORS_ALLOWED_ORIGINS` (= frontend adresi) panelden girilir; Auto-Deploy **After CI Checks Pass** olmalıdır (aşağıdaki kontrol listesi).
 
 **Ücretsiz katmanın sınırları ve alınan önlemler**
 
@@ -500,7 +534,7 @@ static_sites:
         value: https://rapid-quiz-api-pqpc.onrender.com/api/v1
 ```
 
-Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur (ad alınmış olduğundan Render sonuna `-pqpc` ekledi). Adres değişirse `VITE_API_BASE_URL` düzeltilip frontend yeniden derlenmelidir.
+Frontend'in canlı adresi `https://king-prawn-app-ou5mt.ondigitalocean.app`'dir (DigitalOcean'ın verdiği varsayılan adres). Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur (ad alınmış olduğundan Render sonuna `-pqpc` ekledi). Adres değişirse `VITE_API_BASE_URL` düzeltilip frontend yeniden derlenmelidir.
 
 ### Ortam Değişkenleri
 
@@ -508,10 +542,10 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 | --- | --- | --- | --- |
 | `DATABASE_URL` | backend | Neon doğrudan bağlantı adresi | `sslmode=require` içerir; Render panelinde girilir (`sync: false`), repoya girmez |
 | `DJANGO_SECRET_KEY` | backend | Rastgele 50+ karakter | Render panelinde girilir, repoya girmez. Prod ayarları 50 karakterden kısa, 5'ten az farklı karakter içeren veya `insecure`/`change-me`/`changeme` geçen anahtarda uygulamayı başlatmaz (`config/secret_key.py`). Üretmek için: `python -c "import secrets; print(secrets.token_urlsafe(64))"` |
-| `ADMIN_URL` | backend | Tahmin edilmesi zor bir yol (ör. `gizli-yol-9f3a/`) | Django Admin adresi; varsayılan `admin/`. Yalnızca harf, rakam, `_`, `-`, `/`; panelden girilir (`sync: false`) |
+| `ADMIN_URL` | backend | Tahmin edilmesi zor bir yol (ör. `gizli-yol-9f3a/`; gerçek değer yalnızca Render panelinde) | Django Admin adresi; varsayılan `admin/`. Yalnızca harf, rakam, `_`, `-`, `/`; panelden girilir (`sync: false`) |
 | `DJANGO_SETTINGS_MODULE` | backend | `config.settings.prod` | Dockerfile'da tanımlı |
 | `DJANGO_ALLOWED_HOSTS` | backend | `rapid-quiz-api-pqpc.onrender.com` | `render.yaml`'da tanımlı, yalnızca bu servisin adresi (Render health check de bu `Host` ile gelir); özel alan adı eklenirse buraya da eklenir |
-| `CORS_ALLOWED_ORIGINS` | backend | Frontend'in tam origin'i | Panelden girilir; sonunda `/` olmaz; mobil uygulama için gerekmez |
+| `CORS_ALLOWED_ORIGINS` | backend | `https://king-prawn-app-ou5mt.ondigitalocean.app` | Panelden girilir; sonunda `/` olmaz; mobil uygulama için gerekmez |
 | `CSRF_TRUSTED_ORIGINS` | backend | `https://rapid-quiz-api-pqpc.onrender.com` | Django Admin girişi için; joker (`*.onrender.com`) kullanılmaz, yalnızca kendi origin'i güvenilir |
 | `NUM_PROXIES` | backend | `2` (`render.yaml`) | Gerçek istemci IP'si için `X-Forwarded-For` zincirindeki güvenilir hop sayısı; **tahmindir, dağıtımdan sonra backend `README.md`'deki yöntemle doğrulanır** |
 | `WEB_CONCURRENCY` | backend | `2` | gunicorn worker sayısı (512 MB RAM) |
@@ -530,17 +564,18 @@ Render servisinin gerçek adresi `https://rapid-quiz-api-pqpc.onrender.com`'dur 
 - [ ] Loglar stdout'a yazılır (Render loglarında görünür)
 - [ ] `/api/v1/health/` veritabanına basit bir sorgu atar ve 200 döner
 - [ ] `SECURE_SSL_REDIRECT` bilerek kapalıdır: Render health check'i konteynere düz HTTP ile gelebilir ve yönlendirme bunu bozar; HTTP→HTTPS yönlendirmesini Render yapar (`check --deploy`'daki W008 ve HSTS preload uyarısı W021 kabul edilmiştir)
+- [ ] Render'da Auto-Deploy **After CI Checks Pass** seçili (Settings → Build & Deploy → Auto-Deploy). `render.yaml`'daki `autoDeployTrigger: checksPass` mevcut bir servisin bu ayarını kendiliğinden değiştirmez; panelden doğrulanır. Aksi halde `main`'e giden her commit CI'ı beklemeden yayına çıkar
 - [ ] `createcachetable` çalışmış olmalı (throttle sayaçları `DatabaseCache`'te; `scripts/start.sh` her başlangıçta çalıştırır)
 
 ### İlk Kurulum Adımları
 
 1. Her iki repoyu GitHub'a it (`feyzaozkul45/rapid-quiz-backend`, `feyzaozkul45/rapid-quiz-frontend`).
 2. Neon'da PostgreSQL 18 projesi oluştur (Frankfurt); **pooler'sız doğrudan** bağlantı adresini kopyala.
-3. Render'da **New → Blueprint** ile backend reposunu seç; `DATABASE_URL`, `DJANGO_SECRET_KEY` ve geçici bir `CORS_ALLOWED_ORIGINS` değerini panelden gir.
+3. Render'da **New → Blueprint** ile backend reposunu seç; `DATABASE_URL`, `DJANGO_SECRET_KEY`, `ADMIN_URL` (tahmin edilmesi zor bir yol) ve geçici bir `CORS_ALLOWED_ORIGINS` değerini panelden gir. Servis ayarlarında Auto-Deploy'u **After CI Checks Pass** yap.
 4. İlk deploy bitince `/api/v1/health/` adresinin 200 döndüğünü doğrula.
 5. Kendi bilgisayarından Neon'a bağlanarak `seed_questions` ve `createsuperuser` komutlarını çalıştır (backend `README.md`'deki adımlar; bağlantı adresi yalnızca ortam değişkeni olarak verilir).
 6. Frontend'i DigitalOcean'da `doctl apps create --spec .do/app.yaml` ile oluştur; `VITE_API_BASE_URL` Render adresini göstermelidir.
-7. Frontend'in gerçek adresini Render'da `CORS_ALLOWED_ORIGINS` olarak güncelle.
+7. Frontend'in gerçek adresini (`https://king-prawn-app-ou5mt.ondigitalocean.app`) Render'da `CORS_ALLOWED_ORIGINS` olarak güncelle (sonunda `/` olmadan).
 8. `NUM_PROXIES` doğrulamasını yap (backend `README.md`) ve gerekirse değeri düzelt.
 9. İstenirse her iki servise özel alan adı ekle; ekledikten sonra `DJANGO_ALLOWED_HOSTS` ve `CORS_ALLOWED_ORIGINS`'ı güncelle.
 
